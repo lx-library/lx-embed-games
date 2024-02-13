@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            margin: 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #button{
+            position: absolute;
+            left: 50%;
+
+            z-index: 2;
+        }
+        #cover{
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top:0;
+            left:0;
+            z-index: 1;
+        }
+        .label{
+            color: black;
+        }
+        #canvas{
+            background-color: rgba(0,0,0, 0.2);
+            position: relative;
+        }
+        #wrapper{
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+        #container{
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #clock{
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 50px;
+        }
+        #lava{
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            background-color: red;
+            width: 100%;
+            height: 50px;
+            animation: moveUpDown 2s ease-in-out infinite alternate;
+        }
+        @keyframes moveUpDown {
+        0% {
+            bottom: 0;
+        }
+        100% {
+            bottom: -15px;
+        }
+    }
+    </style>
+</head>
+<body>
+    
+    <div id="container">
+        <button id="button">START</button>
+        <div id="wrapper">
+            <div id="cover">
+                <div>score</div>
+                <div class="label" id="score"></div>
+                <div>missed</div>
+                <div class="label" id="missed"></div>
+                <div>accuracy</div>
+                <div class="label" id="accuracy"></div>
+                <div class="label" id="clock"></div>
+            </div>
+            <canvas id="canvas"></canvas>
+            <div id="lava"></div>
+        </div>
+    </div>
+    <script src="./index.js"></script>
+        
+</body>
+</html>
