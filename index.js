@@ -1,26 +1,20 @@
 const canvas = document.querySelector('canvas') 
 const c = canvas.getContext('2d')
 
-
 const spriteSize = 100
 const canvasHeight = spriteSize * 7
+
 canvas.width = 400
-
-
 canvas.height = canvasHeight
 
 const button = document.getElementById('button')
-
 let gameIsRunning = true
 
 function startGame() {
     button.style.display = "none"
-
-    
-
-
     const wrapper = document.getElementById('wrapper')
     wrapper.style.display = "block"
+    player.startTimer()
     animate()
 }
 
@@ -77,10 +71,9 @@ class Player {
 
         score.innerHTML = "0"
         missed.innerHTML = "0"
-        //speed.innerHTML = "0"
         accuracy.innerHTML = "0"
         clock.innerHTML = 60
-        this.startTimer()
+        
     }
 
     updateCurrentLetter(){
@@ -177,7 +170,7 @@ class Player {
 
 }
 
-const player = new Player(['f', 'j'])
+const player = new Player(['f', 'j', 'g', 'h', 'k', 'd'])
 
 addEventListener('keydown', (event) => {
     console.log("key event", event.key)
