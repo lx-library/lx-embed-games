@@ -7,22 +7,17 @@ const canvasHeight = spriteSize * 7
 canvas.width = 400
 canvas.height = canvasHeight
 
-const button = document.getElementById('button')
+const button = document.getElementById('start_button')
+button.addEventListener("click",(event) => {
+    startGame()
+});
+
+const wrapper = document.getElementById('wrapper')
+
 let gameIsRunning = true
 
-function startGame() {
-    button.style.display = "none"
-    const wrapper = document.getElementById('wrapper')
-    wrapper.style.display = "block"
-    player.startTimer()
-    animate()
-}
-
-button.addEventListener("click", startGame);
-
-
 class Player {
-    constructor(letters) {
+    constructor() {
         this.initComponent()
         this.position = { 
             x: 200, 
@@ -32,12 +27,11 @@ class Player {
             x: 0, 
             y: 0
         }
-        this.letters = letters
         const image = new Image()
 
         
-        this.currentLetter = 'f'
-        this.currentLetter = this.updateCurrentLetter(1)
+        // this.currentLetter = 'f'
+        // this.currentLetter = this.updateCurrentLetter(1)
         
 
         image.src = `./images/${this.currentLetter}.png`
@@ -48,7 +42,12 @@ class Player {
         
     }
 
+    setLetters(letters){
+        this.letters = letters
+    }
+
     startTimer(){
+        this.goToStart()
         setInterval(() => {
             const clock = document.getElementById('clock')
             const currentTick = clock.innerHTML
@@ -77,10 +76,13 @@ class Player {
     }
 
     updateCurrentLetter(){
-        const min = 0
-        const max = this.letters.length-1
-        const randomInt = this.getRandInteger(min, max)
-        return this.letters[randomInt]
+        if(this.letters){
+            const min = 0
+            const max = this.letters.length-1
+            const randomInt = this.getRandInteger(min, max)
+            return this.letters[randomInt]
+        }
+        
     }
 
     getRandInteger(min, max) {
@@ -170,7 +172,54 @@ class Player {
 
 }
 
-const player = new Player(['f', 'j', 'g', 'h', 'k', 'd'])
+const player = new Player()
+
+
+function startGame(){
+    start_button.style.display = 'none'
+    wrapper.style.display = 'inline'
+    player.startTimer()
+    this.animate()
+}
+const gradeRButton = document.getElementById('grade_r')
+gradeRButton.addEventListener("click",(event) => {
+    onLevelSelect('GRADE_R')
+    toggleContainer()
+});
+
+const grade1Button = document.getElementById('grade_1')
+grade1Button.addEventListener("click",(event) => {
+    onLevelSelect('GRADE_1')
+    toggleContainer()
+});
+
+const grade2Button = document.getElementById('grade_2')
+grade2Button.addEventListener("click",(event) => {
+    onLevelSelect('GRADE_2')
+    toggleContainer()
+});
+
+const grade3Button = document.getElementById('grade_3')
+grade3Button.addEventListener("click",(event) => {
+    onLevelSelect('GRADE_3')
+    toggleContainer()
+});
+
+function toggleContainer(){
+    const buttonsContainer = document.getElementById('buttons')
+    buttonsContainer.style.display = 'none'
+
+    const startButton = document.getElementById('start_button')
+    startButton.style.display = 'inline'
+}
+
+
+
+
+
+let letters = []
+
+
 
 addEventListener('keydown', (event) => {
     console.log("key event", event.key)
@@ -178,6 +227,29 @@ addEventListener('keydown', (event) => {
     player.checkKey(pressedKey)
 })
 
+function onLevelSelect(level){
+    console.log(level)
+    switch(level){
+        case 'GRADE_R':
+            letters = ['f', 'j', 'g']
+            player.setLetters(letters)
+            return
+        case 'GRADE_1':
+            letters = ['f', 'j', 'g', 'h']
+            player.setLetters(letters)
+            return
+        case 'GRADE_2':
+            letters = ['f', 'j', 'g', 'h', 'd', 'k']
+            player.setLetters(letters)
+            return
+        case 'GRADE_3':
+            letters = ['f', 'j', 'g', 'h', 'd', 'k', 's', 'a', 'l']
+            player.setLetters(letters)
+            return
+        default:
+            return null
+    }
+}
 function animate(){ 
     if(gameIsRunning){
         player.draw()

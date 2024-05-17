@@ -47,6 +47,12 @@
             align-items: center;
             justify-content: center;
         }
+        #buttons{
+            width: 100px;
+        }
+        .button{
+            width: 100%;
+        }
         #clock{
             position: absolute;
             right: 10px;
@@ -62,6 +68,9 @@
             height: 50px;
             animation: moveUpDown 2s ease-in-out infinite alternate;
         }
+        #start_button{
+            display: none;
+        }
         @keyframes moveUpDown {
         0% {
             bottom: 0;
@@ -75,7 +84,16 @@
 <body>
     
     <div id="container">
-        <button id="button">START</button>
+        <div id="start_button">
+            <button id="button">START</button>
+        </div>
+        <div id="buttons">
+            <button class="button" id="grade_r">Grade R</button>
+            <button class="button" id="grade_1">Grade 1</button>
+            <button class="button" id="grade_2">Grade 2</button>
+            <button class="button" id="grade_3">Grade 3</button>
+        </div>
+        
         <div id="wrapper">
             <div id="cover">
                 <div>score</div>
