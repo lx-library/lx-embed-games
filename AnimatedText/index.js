@@ -6,9 +6,8 @@ const dataParam = urlParams.get('data');
 console.log("dave", dataParam);
 
 const cavas = document.getElementById("cavas")
-
-
-
+canvas.width = innerWidth
+canvas.height = innerHeight
 
 const ctx = canvas.getContext('2d');
 
