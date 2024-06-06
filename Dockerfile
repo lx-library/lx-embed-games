@@ -14,5 +14,5 @@ FROM lipanski/docker-static-website:latest
 ARG PUBLIC_URL /.
 COPY --from=build /tmp/app/httpd.conf .
 COPY --from=build /tmp/app/build/ .$PUBLIC_URL
-CMD ["/busybox", "httpd", "-f", "-v", "-p", "80", "-c", "httpd.conf"]
+CMD ["/busybox-httpd", "-f", "-v", "-p", "80", "-c", "httpd.conf"]
 EXPOSE 80
