@@ -127,8 +127,8 @@ function drawGeometry(){
     const userInput = document.getElementById('user_input')
 
 
-    userInput.style.top = `${line10Dims.endY -15}px`
-    userInput.style.left = `${line10Dims.endX + 45}px`
+    userInput.style.top = `${line11Dims.endY -15}px`
+    userInput.style.left = `${line11Dims.endX + 45}px`
     userInput.style.width = '80px'
     userInput.style.fontSize = '20px'
     drawCircle(line10Dims.endX,line10Dims.endY)
