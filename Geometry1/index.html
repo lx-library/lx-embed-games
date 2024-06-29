@@ -22,11 +22,21 @@
             outline: none;
             border: none;
         }
+        #score_display{
+            position: absolute;
+            color: red;
+            font-family: monospace;
+            top: 0;
+            left:0;
+        }
     </style>
 </head>
 <body>
-    <canvas id="straight_line"></canvas>
-    <input id="user_input"/>
+    <div style="position: relative;">
+        <canvas id="straight_line"></canvas>
+        <input id="user_input"/>
+        <div id="score_display"></div>
+    </div>
     
 </body>
 <script src=" index.js"></script>

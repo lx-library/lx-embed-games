@@ -8,6 +8,11 @@ const ctx = canvas.getContext('2d');
 
 // Example function to draw on the canvas
 
+let unit = canvas.width * 0.01
+let offset = 0
+let randomAngle = getRandomNumber()
+let answer = 0
+let score = 0
 
 class Line{
     constructor(color){
@@ -28,6 +33,8 @@ class Line{
     }
 }
 
+const userInput = document.getElementById('user_input')
+const scoreDisplay = document.getElementById('score_display')
 const bottomLine = new Line('green')
 const line2 = new Line('yellow')
 const line3 = new Line('teal')
@@ -39,29 +46,28 @@ const line8 = new Line('blue')
 const line9 = new Line('grey')
 const line10 = new Line('lightblue')
 const line11 = new Line('teal')
-
 const apexX = 250; // Apex x-coordinate
 const apexY = 100; // Apex y-coordinate
 const sideLength = 150; // Length of the equal sides
 const angle = 45; // Angle at the apex in degrees
 
-let offset = 0
-
-function drawText(text, x, y, font = '30px Arial', color = 'white') {
+function drawText(text, x, y, font = `${unit * 4}px Arial`, color = 'white') {
     ctx.font = font;         // Set the font size and family
     ctx.fillStyle = color;   // Set the fill color
     ctx.fillText(text, x, y); // Draw the filled text
 }
-
 function drawStuff() {
     offset = calcLeftOffset()
+    initScoreDisplayStyles()
     drawGeometry()
     //drawImageFullWidth()
 }
-const randomAngle = getRandomNumber()
-
+function initScoreDisplayStyles(){
+    scoreDisplay.style.fontSize = `${unit * 20}px`
+    scoreDisplay.style.margin = `${unit * 20}px`
+}
 function drawGeometry(){
-    const unit = canvas.width * 0.01
+    unit = canvas.width * 0.01
     const padding = unit * 2
     const y = canvas.width * 0.6
     const width = canvas.width - (padding * 2)
@@ -125,16 +131,21 @@ function drawGeometry(){
     //line11.draw(line8MidPoint.midX, line8MidPoint.midY, line11Dims.endX, line11Dims.endY)
 
     drawCircle(line11Dims.endX, line11Dims.endY)
-    drawText(`${randomAngle + 180}\u00B0`, line11Dims.endX - 100,line11Dims.endY)
+
+    const question = randomAngle + 180
+    answer = 180 - question
+    drawText(`${question}\u00B0`, line11Dims.endX - 100,line11Dims.endY)
 
     //addInputElement(line10Dims.endX, line10Dims.endY)
-    const userInput = document.getElementById('user_input')
+    
 
 
     userInput.style.top = `${line10Dims.endY -15}px`
     userInput.style.left = `${(offset / 2) + line10Dims.endX + 45}px`
-    userInput.style.width = '80px'
-    userInput.style.fontSize = '20px'
+    userInput.style.width = `${unit * 7}px`
+    userInput.style.fontSize = `${unit * 4}px`
+    userInput.style.textAlign = 'center'
+    userInput.focus()
     drawCircle(line10Dims.endX,line10Dims.endY)
     
     //debugger
@@ -143,9 +154,6 @@ function drawGeometry(){
 
     //Line
 }
-
-
-
 function calculateMidpoint(startX, startY, endX, endY) {
     // Calculate the midpoint coordinates
     const midX = (startX + endX) / 2;
@@ -154,7 +162,6 @@ function calculateMidpoint(startX, startY, endX, endY) {
     // Return the midpoint as an object
     return { midX, midY };
 }
-
 function calcLeftOffset(){
     let offset = 0
     const isLandscape = window.innerWidth > window.innerHeight;
@@ -164,7 +171,6 @@ function calcLeftOffset(){
     return offset
 
 }
-
 function getRandomNumber() {
     // Generate a random number between 15 and 150
     const randomNumber = Math.random()
@@ -186,7 +192,6 @@ function calculateEndPoint(startX, startY, angle, length) {
 
     return { endX, endY };
 }
-
 function drawCircleWithBorder(circleX, circleY) {
     ctx.beginPath(); // Begin a new path
     ctx.arc(circleX, circleY, canvas.width * 0.02, 0, 2 * Math.PI); // Draw a circle with center at (300, 300), radius 50
@@ -214,7 +219,6 @@ function calculateEqualSides(apexAngle, baseLength) {
 
     return equalSide;
 }
-
 function resizeCanvas() {
     
 
@@ -230,7 +234,33 @@ function resizeCanvas() {
 // Initial call to resize canvas
 resizeCanvas();
 
+function validateAnswer(usersAnswer){
+    parseFloat(usersAnswer) === answer? score++:score--
+
+    let textColor = ""
+    if(parseInt(score) < 1){
+        textColor="red"
+    }else{
+        textColor="green"
+    }
+    userInput.value = ""
+    scoreDisplay.style.color = textColor
+    scoreDisplay.innerHTML = score
+
+    randomAngle = getRandomNumber()
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    drawGeometry()
+
+}
+
 // Add event listener to resize canvas when window size changes
 window.addEventListener('resize', resizeCanvas);
 
-// Draw the image initially once it's loaded
+userInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); 
+        validateAnswer(userInput.value)
+    }
+});
+
+
