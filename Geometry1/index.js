@@ -45,6 +45,8 @@ const apexY = 100; // Apex y-coordinate
 const sideLength = 150; // Length of the equal sides
 const angle = 45; // Angle at the apex in degrees
 
+let offset = 0
+
 function drawText(text, x, y, font = '30px Arial', color = 'white') {
     ctx.font = font;         // Set the font size and family
     ctx.fillStyle = color;   // Set the fill color
@@ -52,9 +54,11 @@ function drawText(text, x, y, font = '30px Arial', color = 'white') {
 }
 
 function drawStuff() {
+    offset = calcLeftOffset()
     drawGeometry()
     //drawImageFullWidth()
 }
+const randomAngle = getRandomNumber()
 
 function drawGeometry(){
     const unit = canvas.width * 0.01
@@ -66,7 +70,7 @@ function drawGeometry(){
     const circleX = canvas.width / 2
     const circleY = y
     
-    const randomAngle = getRandomNumber()
+    
     //debugger
     const oppositeAngle = 180 + randomAngle
     const line2StartX = canvas.width/2
@@ -128,7 +132,7 @@ function drawGeometry(){
 
 
     userInput.style.top = `${line10Dims.endY -15}px`
-    userInput.style.left = `${line10Dims.endX + 45}px`
+    userInput.style.left = `${(offset / 2) + line10Dims.endX + 45}px`
     userInput.style.width = '80px'
     userInput.style.fontSize = '20px'
     drawCircle(line10Dims.endX,line10Dims.endY)
@@ -151,8 +155,14 @@ function calculateMidpoint(startX, startY, endX, endY) {
     return { midX, midY };
 }
 
-function calLeftOffset(){
-    
+function calcLeftOffset(){
+    let offset = 0
+    const isLandscape = window.innerWidth > window.innerHeight;
+    if(isLandscape){
+        offset = window.innerWidth - window.innerHeight
+    }
+    return offset
+
 }
 
 function getRandomNumber() {
