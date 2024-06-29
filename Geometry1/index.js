@@ -1,8 +1,7 @@
 const canvas = document.getElementById('straight_line')
 const ctx = canvas.getContext('2d');
 
-const chalkboardImg = new Image();
-chalkboardImg.src = 'assets/chalkboard.png';
+
 
 // Function to resize the canvas
 
@@ -126,11 +125,14 @@ function drawGeometry(){
 
     //addInputElement(line10Dims.endX, line10Dims.endY)
     const userInput = document.getElementById('user_input')
+
+
     userInput.style.top = `${line10Dims.endY -15}px`
     userInput.style.left = `${line10Dims.endX + 45}px`
     userInput.style.width = '80px'
     userInput.style.fontSize = '20px'
     drawCircle(line10Dims.endX,line10Dims.endY)
+    
     //debugger
     
 
@@ -170,18 +172,7 @@ function calculateEndPoint(startX, startY, angle, length) {
 
     return { endX, endY };
 }
-function drawImageFullWidth() {
-    if (chalkboardImg.complete) { // Check if the image is already loaded
-        ctx.drawImage(chalkboardImg, 0, 0, canvas.width, canvas.height);
-        drawGeometry()
-    } else {
-        // If the image is not loaded yet, wait for the load event
-        chalkboardImg.onload = function() {
-            ctx.drawImage(chalkboardImg, 0, 0, canvas.width, canvas.height);
-            drawGeometry()
-        };
-    }
-}
+
 function drawCircleWithBorder(circleX, circleY) {
     ctx.beginPath(); // Begin a new path
     ctx.arc(circleX, circleY, canvas.width * 0.02, 0, 2 * Math.PI); // Draw a circle with center at (300, 300), radius 50
