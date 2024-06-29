@@ -121,14 +121,14 @@ function drawGeometry(){
     //line11.draw(line8MidPoint.midX, line8MidPoint.midY, line11Dims.endX, line11Dims.endY)
 
     drawCircle(line11Dims.endX, line11Dims.endY)
-    drawText(`${otherAngle * -1}\u00B0`, line11Dims.endX - 100,line11Dims.endY)
+    drawText(`${randomAngle + 180}\u00B0`, line11Dims.endX - 100,line11Dims.endY)
 
     //addInputElement(line10Dims.endX, line10Dims.endY)
     const userInput = document.getElementById('user_input')
 
 
-    userInput.style.top = `${line11Dims.endY -15}px`
-    userInput.style.left = `${line11Dims.endX + 45}px`
+    userInput.style.top = `${line10Dims.endY -15}px`
+    userInput.style.left = `${line10Dims.endX + 45}px`
     userInput.style.width = '80px'
     userInput.style.fontSize = '20px'
     drawCircle(line10Dims.endX,line10Dims.endY)
@@ -149,6 +149,10 @@ function calculateMidpoint(startX, startY, endX, endY) {
 
     // Return the midpoint as an object
     return { midX, midY };
+}
+
+function calLeftOffset(){
+    
 }
 
 function getRandomNumber() {
