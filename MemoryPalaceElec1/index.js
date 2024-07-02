@@ -82,8 +82,8 @@ let levels = {
       doors = [
         new Sprite({
           position: {
-            x: 767,
-            y: 270,
+            x: 300,
+            y: 300,
           },
           imageSrc: './img/doorOpen.png',
           frameRate: 5,
@@ -115,8 +115,8 @@ let levels = {
       doors = [
         new Sprite({
           position: {
-            x: 772.0,
-            y: 336,
+            x: 200,
+            y: 200,
           },
           imageSrc: './img/doorOpen.png',
           frameRate: 5,
@@ -132,8 +132,8 @@ let levels = {
       parsedCollisions = collisionsLevel3.parse2D()
       collisionBlocks = parsedCollisions.createObjectsFrom2D()
       player.collisionBlocks = collisionBlocks
-      player.position.x = 750
-      player.position.y = 230
+      player.position.x = 200
+      player.position.y = 300
       if (player.currentAnimation) player.currentAnimation.isActive = false
 
       background = new Sprite({
@@ -147,8 +147,8 @@ let levels = {
       doors = [
         new Sprite({
           position: {
-            x: 176.0,
-            y: 335,
+            x: 800,
+            y: 400,
           },
           imageSrc: './img/doorOpen.png',
           frameRate: 5,
