@@ -1,8 +1,10 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
-canvas.width = 64 * 16 // 1024
-canvas.height = 64 * 9 // 576
+const unit = 64
+
+canvas.width = unit * 16 // 1024
+canvas.height = unit * 9 // 576
 
 let parsedCollisions
 let collisionBlocks
@@ -25,13 +27,13 @@ const player = new Player({
       imageSrc: './img/king/idleLeft.png',
     },
     runRight: {
-      frameRate: 8,
+      frameRate: 10,
       frameBuffer: 4,
       loop: true,
       imageSrc: './img/king/runRight.png',
     },
     runLeft: {
-      frameRate: 8,
+      frameRate: 10,
       frameBuffer: 4,
       loop: true,
       imageSrc: './img/king/runLeft.png',
@@ -195,7 +197,7 @@ function animate() {
 
   c.save()
   c.globalAlpha = overlay.opacity
-  c.fillStyle = 'black'
+  //c.fillStyle = 'black'
   c.fillRect(0, 0, canvas.width, canvas.height)
   c.restore()
 }

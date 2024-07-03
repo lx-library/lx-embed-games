@@ -16,8 +16,8 @@ Array.prototype.parse2D = function () {
           objects.push(
             new CollisionBlock({
               position: {
-                x: x * 64,
-                y: y * 64,
+                x: x * unit,
+                y: y * unit,
               },
             })
           )
