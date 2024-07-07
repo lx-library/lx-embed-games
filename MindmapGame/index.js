@@ -11,10 +11,10 @@ const types = {
 }
 
 const colors = [
-    "red",
-    "green",
-    "blue",
-    "pink"
+    "linear-gradient(90deg, #08D3FF, #4ABDD6, #057E99)",
+    "linear-gradient(90deg, #2BFF08, #51F243, #51D15D)",
+    "linear-gradient(90deg, #FAFF01, #DDDF6C, #B4B726)",
+    "linear-gradient(90deg, #FF5D01, #D68A5F, #EE6314)"
 ]
 const apiData = {
     node: {
@@ -651,7 +651,7 @@ function drawNodes(parentNode, mindmapData, scale){
         
         currentX = (mindmapData[i].level * (unitSize * 10) * scale) + 50
         const newNode = document.createElement('div')
-        newNode.style.backgroundColor = colors[mindmapData[i].level]
+        newNode.style.background = colors[mindmapData[i].level]
         newNode.style.position = 'absolute'
         newNode.style.display = 'flex'
         //newNode.style.paddingRight = unitSize + 'px'
@@ -664,7 +664,8 @@ function drawNodes(parentNode, mindmapData, scale){
         nodeY = nodeY + (calcInputHeight(scale) + (unitSize * 4)) * 2 * scale
         newNode.style.width = (nodeDims.width) + 'px'
         newNode.style.height = (nodeDims.height) + 'px'
-        newNode.style.borderRadius = (unitSize * wordRatio * 2.5) * scale + 'px'
+        const borderRadius = `${(unitSize * wordRatio * 1.5) * scale}px 0 ${(unitSize * wordRatio * 1.5) * scale}px 0`
+        newNode.style.borderRadius = borderRadius
         parentNode.append(newNode)
 
     }
@@ -691,7 +692,7 @@ function reRender(){
 
 //
 resizeCanvas();
-startTimer()
+//startTimer()
 
 
 //Eventlistners

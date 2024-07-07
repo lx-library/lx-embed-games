@@ -25,9 +25,7 @@ clockWrapper.appendChild(time);
 scoreWrapper.appendChild(scoreIcon); 
 scoreWrapper.appendChild(score); 
 
-let windowWidth
 let windowHeight
-let unit
 let padding
 let logoSize
 let previousScore = 0
