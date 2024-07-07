@@ -10,7 +10,6 @@
             }
             #mindmap_wrapper{
                 position: relative;
-                overflow: hidden;
                 background: url('assets/elec1/bg.png');
                 background-repeat: no-repeat;
                 background-size: cover; 
@@ -31,15 +30,24 @@
                 height: calc(100% - 20px);
                 margin: auto;
             }
+            #main{
+                width: 100%;
+                padding-top: 56.25%;
+                background-color: black;
+                position: relative;
+                overflow-y: scroll;
+            }
         </style>
     </head>
     <body>
-        <div id="mindmap_wrapper">
-            <div id="navbar_wrapper">
+        <div id="main">
+            <div id="toolbar"></div>
+            <!-- <div id="navbar_wrapper">
                 <div id="navbar"></div>
-            </div>
+            </div> -->
         </div>
         
     </body>
+    <script src="GameToolbar/gameToolbar.js"></script>
     <script src="index.js"></script>
 </html>

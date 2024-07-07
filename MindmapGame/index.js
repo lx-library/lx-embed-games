@@ -1,8 +1,8 @@
-const parent = document.getElementById('mindmap_wrapper')
+const parent = document.getElementById('main')
 const unitsPerWidth = 160
 const unitsPerHeight = 90
 const wordRatio = 3
-const navBar = document.getElementById('navbar')
+//const navBar = document.getElementById('navbar')
 //const scale = 0.7
 const types = {
     VISIBLE: 'VISIBLE',
@@ -457,9 +457,9 @@ const apiData = {
     }
 }
 
-let windowWidth = window.innerWidth
-let windowHeight= window.innerHeight
-let unitSize = windowWidth / unitsPerWidth
+//let windowWidth = window.innerWidth
+windowHeight= window.innerHeight
+unitSize = windowWidth / unitsPerWidth
 
 //Elements
 let aspetRatioDiv;
@@ -479,7 +479,6 @@ class Mindmap{
         console.log("this.scale", this.scale)
     }
 }
-
 
 //Functions
 function resizeCanvas() {
@@ -552,17 +551,6 @@ function flattenData(data){
 }
 
 const sourceOfTruth = flattenData(apiData)
-
-
-
-
-
-
-
-
-
-
-
 
 
 function measureWord(word, scale){
@@ -654,14 +642,14 @@ function drawNode(parentNode, data, scale){
     }
 }
 function drawNodes(parentNode, mindmapData, scale){
-    let currentY = 0
+    let currentY = 400
     let currentX = 0
     let padding = unitSize * 2
     currentY += padding
-    let nodeY = (calcInputHeight(scale) + (unitSize * 4)) * 1 * scale
+    let nodeY = ((calcInputHeight(scale) + (unitSize * 4)) * 1 * scale) + 100
     for(let i = 0; i < mindmapData.length; i++){
         
-        currentX = mindmapData[i].level * (unitSize * 10) * scale
+        currentX = (mindmapData[i].level * (unitSize * 10) * scale) + 50
         const newNode = document.createElement('div')
         newNode.style.backgroundColor = colors[mindmapData[i].level]
         newNode.style.position = 'absolute'
@@ -684,8 +672,10 @@ function drawNodes(parentNode, mindmapData, scale){
 
 function drawAspectRatioDiv(){
     aspetRatioDiv = document.createElement('div')
-    aspetRatioDiv.style.width = (unitSize * unitsPerWidth) + 'px'
-    aspetRatioDiv.style.height = (unitSize * unitsPerHeight) + 'px'
+    aspetRatioDiv.style.width = '100%'
+    aspetRatioDiv.style.height = '100%'
+    aspetRatioDiv.style.backgroundColor = 'green'
+    //aspetRatioDiv.style.overflow = 'hidden'
     //aspetRatioDiv.style.backgroundColor= 'rgb(45,45,45)'
     parent.append(aspetRatioDiv)
 }
@@ -693,7 +683,7 @@ function reRender(){
     drawAspectRatioDiv()
     
     drawNodes(aspetRatioDiv, sourceOfTruth, 0.7)
-    drawNodes(navBar, sourceOfTruth, 0.2)
+    // drawNodes(navBar, sourceOfTruth, 0.2)
 }
 
 //Flatten the data without settingf dims
@@ -701,6 +691,7 @@ function reRender(){
 
 //
 resizeCanvas();
+startTimer()
 
 
 //Eventlistners
