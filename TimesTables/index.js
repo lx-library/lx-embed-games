@@ -11,6 +11,17 @@ function startGame(){
     reRender()
     toolbar.startTimer()
 }
+function onAnswerSubmitted(answer, usersAnswer){
+    let isCorrect = false
+    if(usersAnswer === answer){
+        isCorrect = true
+    }
+    if(isCorrect){
+        toolbar.updateScore(1)
+    }else{
+        toolbar.updateScore(-1)
+    }
+}
 
 // Usage example:
 const cards = [

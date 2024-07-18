@@ -44,6 +44,12 @@ class Toolbar {
         logo.style.width = this.logoSize + 'px';
     }
 
+    updateScore(changeBy){
+        const score = document.getElementById('score-wrapper')
+        const previousScore = parseInt(score.innerHTML)
+        score.innerHTML = previousScore + changeBy
+    }
+
     drawTimer(clockWrapper) {
         clockWrapper.style.width = this.logoSize + 'px';
         clockWrapper.style.height = this.logoSize + 'px';
@@ -88,6 +94,7 @@ class Toolbar {
         scoreWrapper.appendChild(scoreIcon);
 
         const score = document.createElement('div');
+        score.id = "score-wrapper"
         score.style.width = this.logoSize + 'px';
         score.style.height = this.logoSize + 'px';
         score.style.position = 'absolute';

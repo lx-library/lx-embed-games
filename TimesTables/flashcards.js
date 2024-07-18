@@ -2,21 +2,22 @@ class FlashCards {
     constructor(parentDiv, data) {
         this.parentDiv = parentDiv;
         this.data = data;
-        this.width = parentDiv.offsetWidth;
-        this.height = parentDiv.offsetHeight;
-        this.unit = this.width / 100;
-        this.logoSize = this.unit * 7;
         this.currentCardIndex = 0;
-        this.handleResize = this.handleResize.bind(this);
         this.currentInputId = 'current-input'; // ID for the current input element
+        this.handleResize = this.handleResize.bind(this);
         window.addEventListener('resize', this.handleResize);
+        this.updateDimensions();
     }
 
-    handleResize() {
+    updateDimensions() {
         this.width = this.parentDiv.offsetWidth;
         this.height = this.parentDiv.offsetHeight;
         this.unit = this.width / 100;
         this.logoSize = this.unit * 7;
+    }
+
+    handleResize() {
+        this.updateDimensions();
         this.draw();
     }
 
@@ -26,7 +27,6 @@ class FlashCards {
         }
 
         const randomIndex = Math.floor(Math.random() * 3);
-
         return cardData.map((card, index) => ({
             ...card,
             isHidden: index === randomIndex
@@ -42,63 +42,60 @@ class FlashCards {
     }
 
     draw() {
-        const element = document.getElementById("flashcard-wrapper");
-        if (element) {
-            element.remove();
+        const existingWrapper = document.getElementById("flashcard-wrapper");
+        if (existingWrapper) {
+            existingWrapper.remove();
         }
 
         const wrapper = document.createElement('div');
-        wrapper.style.width = '100%';
         wrapper.id = "flashcard-wrapper";
-        wrapper.style.height = `${this.height - (9 * this.unit)}px`;
-        wrapper.style.position = 'absolute';
-        wrapper.style.left = 0;
-        wrapper.style.bottom = 0;
-        wrapper.style.display = 'flex';
-        wrapper.style.alignItems = 'center';
-        wrapper.style.justifyContent = 'center';
+        Object.assign(wrapper.style, {
+            width: '100%',
+            height: `${this.height - (9 * this.unit)}px`,
+            position: 'absolute',
+            left: 0,
+            bottom: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+        });
 
         const square = document.createElement('div');
-        square.style.height = `${this.height - (9 * this.unit)}px`;
-        square.style.width = `${this.height - (9 * this.unit)}px`;
+        Object.assign(square.style, {
+            height: `${this.height - (9 * this.unit)}px`,
+            width: `${this.height - (9 * this.unit)}px`
+        });
 
         const topSq = document.createElement('div');
-        topSq.style.height = '50%';
-        topSq.style.width = '50%';
-        topSq.style.margin = 'auto';
+        Object.assign(topSq.style, {
+            height: '50%',
+            width: '50%',
+            margin: 'auto'
+        });
 
         const bottomSq = document.createElement('div');
-        bottomSq.style.height = '50%';
-        bottomSq.style.width = '100%';
-        bottomSq.style.margin = 'auto';
-        bottomSq.style.display = 'grid';
-        bottomSq.style.gridTemplateColumns = '1fr 1fr';
+        Object.assign(bottomSq.style, {
+            height: '50%',
+            width: '100%',
+            margin: 'auto',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr'
+        });
 
-        let nextCardData = (this.data.cards && this.data.cards[this.currentCardIndex]) || null;
-        nextCardData = this.hideRandomCard(nextCardData);
-        nextCardData = this.assignRandomState(nextCardData);
-        nextCardData = this.shuffleArray(nextCardData);
+        let nextCardData = this.data.cards?.[this.currentCardIndex] || null;
+        nextCardData = this.shuffleArray(this.assignRandomState(this.hideRandomCard(nextCardData)));
 
-        const node1 = this.newNode(nextCardData[0]);
-        const node2 = this.newNode(nextCardData[1]);
-        const node3 = this.newNode(nextCardData[2]);
+        [topSq, bottomSq].forEach((sq, idx) => {
+            sq.appendChild(this.newNode(nextCardData[idx]));
+            if (idx === 1) sq.appendChild(this.newNode(nextCardData[2]));
+        });
 
-        topSq.appendChild(node1);
-        bottomSq.appendChild(node2);
-        bottomSq.appendChild(node3);
-
-        square.appendChild(topSq);
-        square.appendChild(bottomSq);
-
+        square.append(topSq, bottomSq);
         wrapper.appendChild(square);
-
         this.parentDiv.appendChild(wrapper);
 
         // Refocus the input after rendering
-        const inputElement = document.getElementById(this.currentInputId);
-        if (inputElement) {
-            inputElement.focus();
-        }
+        document.getElementById(this.currentInputId)?.focus();
     }
 
     getRandomState() {
@@ -116,74 +113,56 @@ class FlashCards {
         }));
     }
 
-    update() {
-        this.currentCardIndex++;
-        if (this.currentCardIndex >= this.data.cards.length) {
-            this.currentCardIndex = 0;
-            debugger
-        }
+    update(answer, usersAnswer) {
+        onAnswerSubmitted(answer, usersAnswer)
+        this.currentCardIndex = (this.currentCardIndex + 1) % this.data.cards.length;
         this.draw();
     }
 
-    newNode(nodeData) {
-        const state = (nodeData && nodeData.state) || null;
-        const isHidden = (nodeData && nodeData.isHidden) || null;
-        const question = (nodeData && nodeData.question) || null;
-        const src = (nodeData && nodeData.src) || null;
+    newNode({ state, isHidden, question, src, answer }) {
         if (!state || !question || !src) return;
 
         const newNode = document.createElement('div');
-        newNode.style.height = '80%';
-        newNode.style.width = '80%';
-        newNode.style.borderRadius = '50%';
-        newNode.style.backgroundColor = 'teal';
-        newNode.style.display = 'flex';
-        newNode.style.alignItems = 'center';
-        newNode.style.justifyContent = 'center';
-        newNode.style.fontSize = '8vw';
-        newNode.style.color = 'white';
+        Object.assign(newNode.style, {
+            height: '80%',
+            width: '80%',
+            borderRadius: '50%',
+            backgroundColor: 'teal',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '8vw',
+            color: 'white'
+        });
 
         const input = document.createElement('input');
-        input.style.width = '12vw';
-        input.style.height = '8vw';
-        input.style.borderRadius = '2vw';
-        input.style.textAlign = 'center';
-        input.style.fontSize = '5vw';
-        input.id = this.currentInputId; // Assign the ID to the input element
-
-        // Arrow function to preserve 'this'
+        Object.assign(input.style, {
+            width: '12vw',
+            height: '8vw',
+            borderRadius: '2vw',
+            textAlign: 'center',
+            fontSize: '5vw'
+        });
+        input.id = this.currentInputId;
         input.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
-                // Handle Enter key press
                 console.log('Enter key pressed', event.target.value);
-                this.update(); // Call update method from class instance
+                this.update(answer, event.target.value);
             }
         });
 
-        if (state === 'IMAGE') {
-            if (isHidden) {
-                newNode.append(input);
-            } else {
-                const imgElement = document.createElement('img');
-                imgElement.src = question;
-                imgElement.style.height = '80%';
-                imgElement.style.width = '80%';
-                imgElement.style.backgroundColor = 'white';
-                imgElement.style.borderRadius = '50%';
-                newNode.appendChild(imgElement);
-            }
-        } else if (state === 'TEXT') {
-            if (isHidden) {
-                newNode.append(input);
-            } else {
-                const imgElement = document.createElement('img');
-                imgElement.src = src;
-                imgElement.style.height = '80%';
-                imgElement.style.width = '80%';
-                imgElement.style.backgroundColor = 'white';
-                imgElement.style.borderRadius = '50%';
-                newNode.appendChild(imgElement);
-            }
+        if (isHidden) {
+            newNode.appendChild(input);
+        } else {
+            const imgElement = document.createElement('img');
+            imgElement.src = state === 'IMAGE' ? question : src;
+            Object.assign(imgElement.style, {
+                height: '80%',
+                width: '80%',
+                backgroundColor: 'white',
+                borderRadius: '50%'
+            });
+            newNode.appendChild(imgElement);
         }
 
         return newNode;
