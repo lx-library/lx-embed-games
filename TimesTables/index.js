@@ -18,11 +18,26 @@ function onAnswerSubmitted(answer, usersAnswer){
     }
     if(isCorrect){
         toolbar.updateScore(1)
+        changeColor('times-tables', 'green')
     }else{
         toolbar.updateScore(-1)
+        changeColor('times-tables', 'red')
     }
 }
-
+function changeColor(divId, newColor) {
+    const div = document.getElementById(divId);
+    
+    // Change to the new color instantly
+    div.style.transition = 'none'; // Disable transition for the immediate change
+    div.style.backgroundColor = newColor;
+    
+    // Force a reflow to apply the immediate style change
+    div.offsetHeight; // This is a trick to force reflow
+  
+    // Change back to the default color over one second
+    div.style.transition = 'background-color 1s ease';
+    div.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+  }
 // Usage example:
 const cards = [
     [
