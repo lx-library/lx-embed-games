@@ -25,19 +25,17 @@ clockWrapper.appendChild(time);
 scoreWrapper.appendChild(scoreIcon); 
 scoreWrapper.appendChild(score); 
 
-let windowHeight
 let padding
 let logoSize
 let previousScore = 0
 
 function updateVars(){
     windowWidth = window.innerWidth
-    windowHeight = window.innerHeight
-    unit = windowWidth / 100
     padding = unit
     logoSize = unit * 7
 }
 function reRender(){
+    debugger
     drawToolbar()
     drawLogo()
     drawTimer()
@@ -126,7 +124,7 @@ function drawScore(){
     score.style.color = "white"
     score.style.fontSize = (unit * 5) + 'px'
 }
-function resizeCanvas() {
+function resizeCanvas3() {
     updateVars()
     reRender()
 }
@@ -180,6 +178,6 @@ function changeContent() {
     debugger
     //targetNode.innerHTML = 'Content has been changed!';
 }
-resizeCanvas()
+resizeCanvas3()
 // startTimer()
-window.addEventListener('resize', resizeCanvas);
+//window.addEventListener('resize', resizeCanvas3);

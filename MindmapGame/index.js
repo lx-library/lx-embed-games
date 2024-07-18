@@ -1,4 +1,4 @@
-const parent = document.getElementById('main')
+const parent = document.getElementById('game-area')
 const unitsPerWidth = 160
 const unitsPerHeight = 90
 const wordRatio = 3
@@ -462,7 +462,13 @@ windowHeight= window.innerHeight
 unitSize = windowWidth / unitsPerWidth
 
 //Elements
-let aspetRatioDiv;
+let aspetRatioDiv = document.createElement('div')
+aspetRatioDiv.style.width = '100%'
+aspetRatioDiv.style.height = '100%'
+aspetRatioDiv.style.backgroundColor = 'green'
+//aspetRatioDiv.style.overflow = 'hidden'
+//aspetRatioDiv.style.backgroundColor= 'rgb(45,45,45)'
+parent.append(aspetRatioDiv)
 
 //Classes
 class Mindmap{
@@ -647,6 +653,9 @@ function drawNodes(parentNode, mindmapData, scale){
     let padding = unitSize * 2
     currentY += padding
     let nodeY = ((calcInputHeight(scale) + (unitSize * 4)) * 1 * scale) + 100
+    while (parentNode.firstChild) {
+        parentNode.removeChild(parentNode.firstChild);
+    }
     for(let i = 0; i < mindmapData.length; i++){
         
         currentX = (mindmapData[i].level * (unitSize * 10) * scale) + 50
@@ -666,22 +675,14 @@ function drawNodes(parentNode, mindmapData, scale){
         newNode.style.height = (nodeDims.height) + 'px'
         const borderRadius = `${(unitSize * wordRatio * 1.5) * scale}px 0 ${(unitSize * wordRatio * 1.5) * scale}px 0`
         newNode.style.borderRadius = borderRadius
+        
         parentNode.append(newNode)
 
     }
 }
 
-function drawAspectRatioDiv(){
-    aspetRatioDiv = document.createElement('div')
-    aspetRatioDiv.style.width = '100%'
-    aspetRatioDiv.style.height = '100%'
-    aspetRatioDiv.style.backgroundColor = 'green'
-    //aspetRatioDiv.style.overflow = 'hidden'
-    //aspetRatioDiv.style.backgroundColor= 'rgb(45,45,45)'
-    parent.append(aspetRatioDiv)
-}
+
 function reRender(){
-    drawAspectRatioDiv()
     
     drawNodes(aspetRatioDiv, sourceOfTruth, 0.7)
     // drawNodes(navBar, sourceOfTruth, 0.2)
@@ -696,4 +697,4 @@ resizeCanvas();
 
 
 //Eventlistners
-window.addEventListener('resize', resizeCanvas);
+//window.addEventListener('resize', resizeCanvas);

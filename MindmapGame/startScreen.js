@@ -54,5 +54,15 @@ function startGame(){
     startScreen.style.display = "none"
     startTimer()
 }
+function resizeCanvas(){
+    windowWidth = window.innerWidth
+    windowHeight = window.innerHeight
+    unit = windowWidth / 100
+    //eRender()
+}
 
 startScreen.addEventListener('click', startGame)
+resizeCanvas()
+
+// startTimer()
+window.addEventListener('resize', resizeCanvas);
