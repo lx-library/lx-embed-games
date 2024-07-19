@@ -150,6 +150,110 @@ const cards = [
         },
         {
             src: 'assets/encodings/12.png',
+            question: 'assets/numbers/12.png',
+            answer: '12'
+        },
+        {
+            src: 'assets/encodings/36.png',
+            question: 'assets/numbers/36.png',
+            answer: '36'
+        },
+    ],
+    [
+        {
+            src: 'assets/encodings/4.png',
+            question: 'assets/numbers/4.png',
+            answer: '4'
+        },
+        {
+            src: 'assets/encodings/4.png',
+            question: 'assets/numbers/4.png',
+            answer: '4'
+        },
+        {
+            src: 'assets/encodings/16.png',
+            question: 'assets/numbers/16.png',
+            answer: '16'
+        },
+
+    ],
+    [
+        {
+            src: 'assets/encodings/4.png',
+            question: 'assets/numbers/4.png',
+            answer: '4'
+        },
+        {
+            src: 'assets/encodings/5.png',
+            question: 'assets/numbers/5.png',
+            answer: '5'
+        },
+        {
+            src: 'assets/encodings/20.png',
+            question: 'assets/numbers/20.png',
+            answer: '20'
+        },
+    ],
+    [
+        {
+            src: 'assets/encodings/4.png',
+            question: 'assets/numbers/4.png',
+            answer: '4'
+        },
+        {
+            src: 'assets/encodings/6.png',
+            question: 'assets/numbers/6.png',
+            answer: '6'
+        },
+        {
+            src: 'assets/encodings/24.png',
+            question: 'assets/numbers/24.png',
+            answer: '24'
+        },
+
+    ],
+    [
+        {
+            src: 'assets/encodings/4.png',
+            question: 'assets/numbers/4.png',
+            answer: '4'
+        },
+        {
+            src: 'assets/encodings/7.png',
+            question: 'assets/numbers/7.png',
+            answer: '7'
+        },
+        {
+            src: 'assets/encodings/28.png',
+            question: 'assets/numbers/28.png',
+            answer: '28'
+        },
+    ],
+    [
+        {
+            src: 'assets/encodings/4.png',
+            question: 'assets/numbers/4.png',
+            answer: '4'
+        },
+        {
+            src: 'assets/encodings/8.png',
+            question: 'assets/numbers/8.png',
+            answer: '8'
+        },
+        {
+            src: 'assets/encodings/32.png',
+            question: 'assets/numbers/32.png',
+            answer: '32'
+        },
+    ],
+    [
+        {
+            src: 'assets/encodings/4.png',
+            question: 'assets/numbers/4.png',
+            answer: '4'
+        },
+        {
+            src: 'assets/encodings/9.png',
             question: 'assets/numbers/9.png',
             answer: '9'
         },
@@ -157,6 +261,23 @@ const cards = [
             src: 'assets/encodings/36.png',
             question: 'assets/numbers/36.png',
             answer: '36'
+        },
+    ],
+    [
+        {
+            src: 'assets/encodings/4.png',
+            question: 'assets/numbers/4.png',
+            answer: '4'
+        },
+        {
+            src: 'assets/encodings/12.png',
+            question: 'assets/numbers/12.png',
+            answer: '12'
+        },
+        {
+            src: 'assets/encodings/48.png',
+            question: 'assets/numbers/48.png',
+            answer: '48'
         },
     ],
 ];
