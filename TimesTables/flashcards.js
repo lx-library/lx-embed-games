@@ -119,7 +119,7 @@ class FlashCards {
         this.draw();
     }
 
-    newNode({ state, isHidden, question, src, answer }) {
+    newNode({ state, isHidden, question, src, answer, isProduct }) {
         if (!state || !question || !src) return;
 
         const newNode = document.createElement('div');
@@ -127,7 +127,7 @@ class FlashCards {
             height: '80%',
             width: '80%',
             borderRadius: '50%',
-            backgroundColor: 'teal',
+            backgroundColor: isProduct? 'gold': 'teal',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
