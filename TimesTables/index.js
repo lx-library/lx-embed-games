@@ -39,6 +39,21 @@ function changeColor(divId, newColor) {
     div.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
   }
 // Usage example:
+
+function shuffleArray(array) {
+    // Create a copy of the array to avoid mutating the original array
+    const shuffledArray = array.slice();
+    
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      // Generate a random index between 0 and i (inclusive)
+      const j = Math.floor(Math.random() * (i + 1));
+  
+      // Swap elements at indices i and j
+      [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+    }
+  
+    return shuffledArray;
+}
 const cards = [
     [
         {
@@ -296,7 +311,7 @@ const cards = [
     ],
 ];
 const data = {
-    cards: cards
+    cards: shuffleArray(cards)
 };
 
 
