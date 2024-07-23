@@ -309,6 +309,97 @@ const cards = [
             isProduct: true
         },
     ],
+    [
+        {
+            src: 'assets/encodings/factors/5.png',
+            question: 'assets/numbers/5.png',
+            answer: '5'
+        },
+        {
+            src: 'assets/encodings/factors/5.png',
+            question: 'assets/numbers/5.png',
+            answer: '5'
+        },
+        {
+            src: 'assets/encodings/25.png',
+            question: 'assets/numbers/25.png',
+            answer: '25',
+            isProduct: true
+        },
+    ],
+    [
+        {
+            src: 'assets/encodings/factors/5.png',
+            question: 'assets/numbers/5.png',
+            answer: '5'
+        },
+        {
+            src: 'assets/encodings/factors/6.png',
+            question: 'assets/numbers/6.png',
+            answer: '6'
+        },
+        {
+            src: 'assets/encodings/30.png',
+            question: 'assets/numbers/30.png',
+            answer: '30',
+            isProduct: true
+        },
+    ],
+    [
+        {
+            src: 'assets/encodings/factors/5.png',
+            question: 'assets/numbers/5.png',
+            answer: '5'
+        },
+        {
+            src: 'assets/encodings/factors/7.png',
+            question: 'assets/numbers/7.png',
+            answer: '7'
+        },
+        {
+            src: 'assets/encodings/35.png',
+            question: 'assets/numbers/35.png',
+            answer: '35',
+            isProduct: true
+        },
+    ],
+    [
+        {
+            src: 'assets/encodings/factors/5.png',
+            question: 'assets/numbers/5.png',
+            answer: '5'
+        },
+        {
+            src: 'assets/encodings/factors/8.png',
+            question: 'assets/numbers/8.png',
+            answer: '8'
+        },
+        {
+            src: 'assets/encodings/40.png',
+            question: 'assets/numbers/40.png',
+            answer: '40',
+            isProduct: true
+        },
+    ],  
+    [
+        {
+            src: 'assets/encodings/factors/5.png',
+            question: 'assets/numbers/5.png',
+            answer: '5'
+        },
+        {
+            src: 'assets/encodings/factors/9.png',
+            question: 'assets/numbers/9.png',
+            answer: '9'
+        },
+        {
+            src: 'assets/encodings/45.png',
+            question: 'assets/numbers/45.png',
+            answer: '45',
+            isProduct: true
+        },
+    ],
+    
 ];
 const data = {
     cards: shuffleArray(cards)
