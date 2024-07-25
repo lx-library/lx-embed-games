@@ -38,10 +38,10 @@ class SpellChecker {
 
 const dataArray = [
   { audioSrc: 'assets/audio1.mp3', sentence: "The arrivals at the airport were greeted with cheers and smiles." },
-  // { audioSrc: 'assets/audio2.mp3', sentence: "She made a refreshing smoothie with fresh pineapples and mangoes." },
-  // { audioSrc: 'assets/audio3.mp3', sentence: "The garden was filled with an abundant variety of flowers." },
-  // { audioSrc: 'assets/audio4.mp3', sentence: "The ambiguous statement caused confusion and debate among the committee members." },
-  // { audioSrc: 'assets/audio5.mp3', sentence: "Analyze the data to find trends and improve strategies." }
+  { audioSrc: 'assets/audio2.mp3', sentence: "She made a refreshing smoothie with fresh pineapples and mangoes." },
+  { audioSrc: 'assets/audio3.mp3', sentence: "The garden was filled with an abundant variety of flowers." },
+  { audioSrc: 'assets/audio4.mp3', sentence: "The ambiguous statement caused confusion and debate among the committee members." },
+  { audioSrc: 'assets/audio5.mp3', sentence: "Analyze the data to find trends and improve strategies." }
 ];
 
 let currentIndex = 0;
