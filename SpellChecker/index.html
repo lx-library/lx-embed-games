@@ -3,33 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Script Loading</title>
-</head>
-<body>
-    <script id="script1" src="SpellChecker.js"></script>
-    <script id="script2" src="CharacterInput.js" style="display: none;"></script>
-    <script>
-        // Function to load the next script
-        function loadNextScript() {
-            // Remove the current script
-            const currentScript = document.getElementById('script1');
-            if (currentScript) {
-                currentScript.remove();
-            }
-
-            // Hide the next script while loading
-            const nextScript = document.getElementById('script2');
-            if (!currentScript || nextScript) {
-                nextScript.style.display = 'block';
-                const scriptElement = document.createElement('script');
-                scriptElement.src = nextScript.src;
-                scriptElement.onload = () => nextScript.style.display = 'none';
-                document.body.appendChild(scriptElement);
-            }
+    <title>Listening and Spelling Test</title>
+    <link rel="icon" href="path/to/your/favicon.ico" type="image/x-icon">
+    <style>
+        /* Add CSS styles here or link to a CSS file */
+        .input-container {
+            margin-top: 20px;
         }
 
-        // Simulate onComplete event from script1.js
-        setTimeout(loadNextScript, 5000); // Adjust timing or trigger based on actual script completion
-    </script>
+        .input-box {
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            margin: 2px;
+        }
+
+        .text-display {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <script id="script1" src="SpellChecker.js" defer></script>
 </body>
 </html>

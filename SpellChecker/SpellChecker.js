@@ -1,169 +1,132 @@
 class SpellChecker {
-    constructor(audioSrc, words) {
+  constructor(audioSrc, words) {
       this.audio = new Audio(audioSrc);
       this.words = words;
-      this.initUI();
-    }
-  
-    initUI() {
-      // Create UI elements
-      this.audioButton = document.createElement('button');
-      this.audioButton.textContent = 'Play Audio';
-      this.audioButton.addEventListener('click', () => this.playAudio());
-  
-      this.inputBox = document.createElement('input');
-      this.inputBox.type = 'text';
-  
-      this.submitButton = document.createElement('button');
-      this.submitButton.textContent = 'Submit';
-      this.submitButton.addEventListener('click', () => this.checkSpelling());
-  
-      this.resultsContainer = document.createElement('div');
-  
-      // Append UI elements to the document body
-      document.body.appendChild(this.audioButton);
-      document.body.appendChild(this.inputBox);
-      document.body.appendChild(this.submitButton);
-      document.body.appendChild(this.resultsContainer);
-    }
-  
-    playAudio() {
-      this.audio.play();
-    }
-
-    saveNewErrors(errorsMade){
-        let previousErrors = localStorage.getItem('lx-spell-errors')
-        if(!previousErrors) previousErrors = []
-        else previousErrors = JSON.parse(previousErrors)
-        console.log('previousErrors', previousErrors)
-        const newListOfErrors = [...previousErrors, ...errorsMade];
-        localStorage.setItem('lx-spell-errors', JSON.stringify(newListOfErrors))
-    }
-  
-    checkSpelling() {
-      const userInput = this.inputBox.value;
-      const userWords = userInput.split(/\s+/);
-      let errors = [];
-  
-      // Check each word
-      userWords.forEach((word, index) => {
-        if (this.words[index] !== word) {
-          errors.push({
-            index,
-            given: word,
-            expected: this.words[index]
-          });
-        }
-      });
-
-      this.saveNewErrors(errors)
-  
-      // Display results
-      this.displayResults(errors);
-      loadNextScript()
-    }
-  
-    displayResults(errors) {
-      this.resultsContainer.innerHTML = '';
-  
-      if (errors.length === 0) {
-        this.resultsContainer.textContent = 'No errors found. Well done!';
-        return;
-      }
-  
-      errors.forEach(error => {
-        const errorDiv = document.createElement('div');
-        errorDiv.textContent = `Word ${error.index + 1}: "${error.given}" should be "${error.expected}".`;
-        this.resultsContainer.appendChild(errorDiv);
-      });
-    }
   }
 
-  //remove spell suggestions from input
-  //split commas and stops off separatly
-  // do a word count before allowing user to submit
-// 1. Abundant
-// 2. Ambiguous
-// 3. Analyze
-// 4. Appropriate
-// 5. Argument
-// 6. Assert
-// 7. Assess
-// 8. Authentic
-// 9. Bias
-// 10. Cite
-// 11. Claim
-// 12. Coherent
-// 13. Compare
-// 14. Comprehend
-// 15. Conclude
-// 16. Consequence
-// 17. Contrast
-// 18. Correlate
-// 19. Critique
-// 20. Deduce
-// 21. Define
-// 22. Demonstrate
-// 23. Derive
-// 24. Determine
-// 25. Differentiate
-// 26. Distinguish
-// 27. Effective
-// 28. Evaluate
-// 29. Evidence
-// 30. Explain
-// 31. Explicit
-// 32. Factor
-// 33. Identify
-// 34. Illustrate
-// 35. Imply
-// 36. Infer
-// 37. Interpret
-// 38. Justify
-// 39. Logical
-// 40. Method
-// 41. Modify
-// 42. Objective
-// 43. Paraphrase
-// 44. Perspective
-// 45. Plausible
-// 46. Predict
-// 47. Principle
-// 48. Problematic
-// 49. Propose
-// 50. Rational
-// 51. Relevant
-// 52. Reliable
-// 53. Research
-// 54. Resolution
-// 55. Revise
-// 56. Sequence
-// 57. Source
-// 58. Specify
-// 59. Structure
-// 60. Substantiate
-// 61. Summarize
-// 62. Support
-// 63. Synthesize
-// 64. Theory
-// 65. Thesis
-// 66. Trace
-// 67. Valid
-// 68. Verify
-// 69. Verify
-// 70. Verify
-  
-  // Example usage:
-//   const audioSrc = '/SpellChecker/assets/audio1.mp3'; // Replace with your audio file path
-//   const sentence = "The arrivals at the airport were greeted with cheers and smiles.";
+  playAudio() {
+      this.audio.play();
+  }
 
-//   const audioSrc = '/SpellChecker/assets/audio2.mp3'; 
-//   const sentence = "She made a refreshing smoothie with fresh pineapples and mangoes.";
+  saveNewErrors(errorsMade) {
+      let previousErrors = localStorage.getItem('lx-spell-errors');
+      if (!previousErrors) previousErrors = [];
+      else previousErrors = JSON.parse(previousErrors);
+      const newListOfErrors = [...previousErrors, ...errorsMade];
+      localStorage.setItem('lx-spell-errors', JSON.stringify(newListOfErrors));
+  }
 
-    const audioSrc = '/SpellChecker/assets/audio3.mp3'; 
-    const sentence = "The garden was filled with an abundant variety of flowers.";
+  checkSpelling(userInput) {
+      const userWords = userInput.split(/\s+/);
+      let errors = [];
 
-  
-    const words = sentence.split(/\s+/);
-    const spellChecker = new SpellChecker(audioSrc, words);
-  
+      userWords.forEach((word, index) => {
+          if (this.words[index] !== word) {
+              errors.push({
+                  index,
+                  given: word,
+                  expected: this.words[index]
+              });
+          }
+      });
+
+      this.saveNewErrors(errors);
+
+      return errors;
+  }
+}
+
+const dataArray = [
+  { audioSrc: 'assets/audio1.mp3', sentence: "The arrivals at the airport were greeted with cheers and smiles." },
+  // { audioSrc: 'assets/audio2.mp3', sentence: "She made a refreshing smoothie with fresh pineapples and mangoes." },
+  // { audioSrc: 'assets/audio3.mp3', sentence: "The garden was filled with an abundant variety of flowers." },
+  // { audioSrc: 'assets/audio4.mp3', sentence: "The ambiguous statement caused confusion and debate among the committee members." },
+  // { audioSrc: 'assets/audio5.mp3', sentence: "Analyze the data to find trends and improve strategies." }
+];
+
+let currentIndex = 0;
+let spellChecker;
+
+function initializeSpellChecker() {
+  const { audioSrc, sentence } = dataArray[currentIndex];
+  spellChecker = new SpellChecker(audioSrc, sentence.split(/\s+/));
+}
+
+initializeSpellChecker();
+
+const playButton = document.createElement('button');
+playButton.textContent = 'Play Audio';
+document.body.appendChild(playButton);
+
+const textarea = document.createElement('textarea');
+textarea.rows = 4;
+textarea.cols = 50;
+textarea.spellcheck = false;
+document.body.appendChild(textarea);
+
+const submitButton = document.createElement('button');
+submitButton.textContent = 'Submit';
+document.body.appendChild(submitButton);
+
+const resultDiv = document.createElement('div');
+document.body.appendChild(resultDiv);
+
+const nextButton = document.createElement('button');
+nextButton.textContent = 'Next';
+nextButton.style.display = 'none';
+document.body.appendChild(nextButton);
+
+function loadCharacterInput() {
+  const existingScript = document.getElementById('script2');
+  if (!existingScript) {
+      const script2 = document.createElement('script');
+      script2.id = 'script2';
+      script2.src = 'CharacterInput.js';
+      script2.onload = () => {
+          console.log('CharacterInput.js loaded successfully');
+      };
+      document.body.appendChild(script2);
+  }
+}
+
+function loadNextItem() {
+  currentIndex += 1;
+  if (currentIndex < dataArray.length) {
+      initializeSpellChecker();
+      resultDiv.innerHTML = '';
+      textarea.value = '';
+      nextButton.style.display = 'none';
+  } else {
+      resultDiv.innerHTML = '<p>You have completed all the words!</p>';
+      loadCharacterInput();
+  }
+}
+
+playButton.addEventListener('click', () => {
+  spellChecker.playAudio();
+});
+
+submitButton.addEventListener('click', () => {
+  const inputValue = textarea.value;
+  const errors = spellChecker.checkSpelling(inputValue);
+  resultDiv.innerHTML = '';
+
+  if (errors.length === 0) {
+      resultDiv.innerHTML = '<p>No errors found. Well done!</p>';
+  } else {
+      errors.forEach(error => {
+          const errorDiv = document.createElement('div');
+          errorDiv.textContent = `Error in word ${error.index + 1}: "${error.given}" should be "${error.expected}".`;
+          resultDiv.appendChild(errorDiv);
+      });
+      const correctAnswerDiv = document.createElement('div');
+      correctAnswerDiv.textContent = `Correct answer: ${dataArray[currentIndex].sentence.split(/\s+/).join(' ')}`;
+      resultDiv.appendChild(correctAnswerDiv);
+  }
+
+  nextButton.style.display = 'inline';
+});
+
+nextButton.addEventListener('click', () => {
+  loadNextItem();
+});

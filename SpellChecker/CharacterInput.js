@@ -1,13 +1,26 @@
 class CharacterInput {
-    constructor(text) {
-        this.text = text;
+    constructor(words) {
+        this.words = words;
+        this.currentWordIndex = 0;
         this.successfulAttempts = 0;  // Counter for successful attempts
         this.container = document.createElement('div');
         this.container.classList.add('input-container');
         this.inputs = [];
-        this.createInputs();
         this.displayTextElement = this.displayText();
-        this.focusFirstInput();
+        this.loadWord();
+    }
+
+    loadWord() {
+        this.container.innerHTML = ''; // Clear previous inputs
+        this.inputs = [];
+        if (this.currentWordIndex < this.words.length) {
+            this.text = this.words[this.currentWordIndex];
+            this.createInputs();
+            this.focusFirstInput();
+        } else {
+            this.displayTextElement.textContent = 'You have completed all the words!';
+            localStorage.removeItem('lx-spell-errors'); // Clear local storage
+        }
     }
 
     createInputs() {
@@ -25,7 +38,7 @@ class CharacterInput {
 
     displayText() {
         const textDisplay = document.createElement('div');
-        textDisplay.textContent = this.text;
+        textDisplay.classList.add('text-display');
         document.body.insertBefore(textDisplay, this.container);
         return textDisplay;
     }
@@ -37,8 +50,6 @@ class CharacterInput {
                 this.inputs[index + 1].focus();
             } else {
                 this.checkInputs();
-                this.resetInputs();
-                this.focusFirstInput();
             }
         }
     }
@@ -51,10 +62,12 @@ class CharacterInput {
                 alert('Congratulations! You have typed the text correctly 10 times.');
                 this.successfulAttempts = 0;  // Reset the counter after alert
             }
+            this.currentWordIndex++;
+            this.loadWord(); // Load the next word
         } else {
             console.log('Error: The input does not match the expected word.');
-            console.log('Expected:', this.text);
-            console.log('Received:', userInput);
+            this.resetInputs();
+            this.focusFirstInput();
         }
         // Hide the display text after checking inputs
         if (this.displayTextElement) {
@@ -73,7 +86,12 @@ class CharacterInput {
     }
 }
 
-// Example usage
 document.addEventListener('DOMContentLoaded', () => {
-    new CharacterInput('hello');
+    let errors = localStorage.getItem('lx-spell-errors');
+    if (errors) {
+        errors = JSON.parse(errors).map(error => error.expected);
+        new CharacterInput(errors);
+    } else {
+        console.log('No errors found in local storage.');
+    }
 });
