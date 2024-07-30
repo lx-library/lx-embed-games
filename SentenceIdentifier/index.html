@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Identify Sentence Elements</title>
+  <style>
+    .word {
+      padding: 5px;
+      cursor: pointer;
+      display: inline-block;
+      font-size: 25px; /* Set font size to 25px */
+    }
+    .correct {
+      background-color: lightgreen;
+    }
+    .incorrect {
+      background-color: lightcoral;
+    }
+    #question-container, #sentence-container, #message, #countdown {
+      font-size: 25px; /* Set font size to 25px for these elements */
+    }
+    #scoreboard {
+      display: none; /* Hide scoreboard by default */
+      font-size: 25px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="question-container"></div>
+  <div id="sentence-container"></div>
+  <div id="message"></div>
+  <div id="countdown"></div> <!-- Countdown container -->
+  <div id="scoreboard"></div> <!-- Scoreboard container -->
+
+  <script type="module">
+    import sentencesData from './sentencesData.js';
+
+    const questionContainer = document.getElementById('question-container');
+    const sentenceContainer = document.getElementById('sentence-container');
+    const message = document.getElementById('message');
+    const countdown = document.getElementById('countdown');
+    const scoreboard = document.getElementById('scoreboard');
+
+    let currentSentenceIndex = 0;
+    let step = 1; // Track the current step
+    let identifiedWords = new Set(); // Track identified words for current step
+    let totalWords; // Total number of words to identify in the current step
+    let score = 0; // Track the score
+
+    function initializeStep(wordType) {
+      identifiedWords.clear(); // Clear previously identified words
+      totalWords = sentencesData[currentSentenceIndex].words.filter(wordObj => wordObj.role === wordType).length;
+      score += totalWords; // Add the number of words to the score
+      updateCountdown(wordType);
+    }
+
+    function updateCountdown(wordType) {
+      const remainingCount = totalWords - identifiedWords.size;
+      countdown.textContent = `Remaining ${wordType}s to identify: ${remainingCount}`;
+    }
+
+    function displaySentence() {
+      sentenceContainer.innerHTML = '';
+      const sentenceData = sentencesData[currentSentenceIndex];
+      sentenceData.words.forEach((wordObj) => {
+        const wordElement = document.createElement('span');
+        wordElement.textContent = wordObj.word + ' ';
+        wordElement.className = 'word';
+        wordElement.onclick = () => handleWordClick(wordObj, wordElement);
+        sentenceContainer.appendChild(wordElement);
+      });
+    }
+
+    function displayQuestion(questionText) {
+      questionContainer.textContent = questionText;
+    }
+
+    function handleWordClick(wordObj, wordElement) {
+      const currentType = getCurrentWordType();
+
+      if (wordObj.role === currentType) {
+        if (!identifiedWords.has(wordObj.word)) {
+          identifiedWords.add(wordObj.word);
+          wordElement.classList.add('correct');
+          message.textContent = `Correct! You have identified a ${currentType}.`;
+          updateCountdown(currentType);
+          if (identifiedWords.size === totalWords) {
+            step++;
+            setTimeout(() => {
+              moveToNextStep();
+              displaySentence(); // Redisplay the sentence for the next step
+            }, 2000); // Delay to show the correct message before moving on
+          }
+        }
+      } else {
+        wordElement.classList.add('incorrect');
+        message.textContent = 'Incorrect. Try again.';
+        score--; // Deduct points for incorrect guess
+      }
+    }
+
+    function getCurrentWordType() {
+      switch (step) {
+        case 1:
+          return 'subject';
+        case 2:
+          return 'object';
+        case 3:
+          return 'verb';
+        case 4:
+          return 'adjective';
+        case 5:
+          return 'adverb';
+        default:
+          return null;
+      }
+    }
+
+    function moveToNextStep() {
+      const currentType = getCurrentWordType();
+      if (currentType) {
+        initializeStep(currentType);
+        displayQuestion(`Now, click on all the ${currentType}s in the sentence.`);
+      } else {
+        if (currentSentenceIndex < sentencesData.length - 1) {
+          currentSentenceIndex++;
+          step = 1;
+          initializeStep('subject');
+          displayQuestion('Click on the subject in the sentence.');
+          displaySentence();
+        } else {
+          showScoreboard(); // Show scoreboard after the last step
+        }
+      }
+    }
+
+    function showScoreboard() {
+      questionContainer.style.display = 'none'; // Hide the question container
+      sentenceContainer.style.display = 'none'; // Hide the sentence container
+      message.style.display = 'none'; // Hide the message container
+      countdown.style.display = 'none'; // Hide the countdown container
+
+      scoreboard.innerHTML = `<h2>Game Over!</h2><p>Your score: ${score}</p>`;
+      scoreboard.style.display = 'block'; // Show the scoreboard
+    }
+
+    // Initialize the first step
+    initializeStep('subject');
+    displayQuestion('Click on the subject in the sentence.');
+    displaySentence();
+  </script>
+</body>
+</html>
