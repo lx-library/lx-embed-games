@@ -22,10 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(container);
 
     function loadWord() {
-        if (currentWordIndex >= words.length) {
-            alert('All words completed!');
-            localStorage.removeItem('lx-spell-errors'); // Remove data from local storage
-            return;
+        // Skip undefined words
+        while (words[currentWordIndex] === undefined) {
+            currentWordIndex++;
+            if (currentWordIndex >= words.length) {
+                alert('All words completed!');
+                localStorage.removeItem('lx-spell-errors'); // Remove data from local storage
+                return;
+            }
         }
 
         wordContainer.innerText = words[currentWordIndex];
