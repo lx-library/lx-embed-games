@@ -1,14 +1,18 @@
 const data = [
     {
-        operands: [3, 6],
+        operands: [-5, 2],
         operation: 'ADDITION'
     },
     {
-        operands: [-2, 5],
+        operands: [-12, 5],
         operation: 'ADDITION'
     },
     {
-        operands: [3, 6],
+        operands: [-16, 7],
+        operation: 'ADDITION'
+    },
+    {
+        operands: [-14, 5],
         operation: 'ADDITION'
     }
 ];
