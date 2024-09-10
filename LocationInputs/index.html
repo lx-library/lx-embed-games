@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Input Placement</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevents scrolling when elements are added */
+        }
+
+        #display {
+            width: 100%;
+            height: 100vh; /* Use full viewport height */
+            position: relative;
+        }
+
+        #anchor {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-color: rebeccapurple;
+            top: 0;
+            left: 0;
+            background-size: cover; /* Ensures background image covers the area */
+            background-position: top left; /* Positions the background image at top left */
+        }
+
+        .input-container {
+            position: absolute;
+            display: none; /* Initially hide all input containers */
+        }
+
+        .input-container input {
+            padding: 0 1.5vw; /* Add left and right padding */
+            font-size: 5vw; /* Adjust font size */
+            border: none; /* Remove default border */
+            outline: none; /* Remove default outline */
+            background-color: transparent; /* Transparent background */
+            color: white; /* Text color */
+            width: calc(100% - 3vw); /* Fit width with padding considered */
+        }
+
+        .answer-display {
+            position: absolute;
+            font-size: 5vw; /* Adjusted font size */
+            color: white; /* Adjust text color as needed */
+        }
+
+        #submitButton {
+            display: none; /* Initially hidden */
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="display">
+        <div id="anchor"></div>
+    </div>
+
+    <script>
+        const data = {
+            bgSrc: 'assets/bg.png', // Background source image
+            inputs: [
+                {
+                    answer: '9',
+                    location: {
+                        top: '58',
+                        left: '73'
+                    }
+                },
+                {
+                    answer: '4',
+                    location: {
+                        top: '58',
+                        left: '66'
+                    }
+                }
+            ]
+        };
+
+        // Set the background image for the anchor element
+        document.getElementById('anchor').style.backgroundImage = `url('${data.bgSrc}')`;
+
+        // Store user answers
+        const userAnswers = Array(data.inputs.length).fill('');
+
+        // Function to create input elements based on data
+        function createInputs() {
+            data.inputs.forEach((inputData, index) => {
+                const inputContainer = document.createElement('div');
+                inputContainer.className = 'input-container';
+                inputContainer.style.top = inputData.location.top + '%';
+                inputContainer.style.left = inputData.location.left + '%';
+
+                const inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.dataset.index = index; // Store the index of the input
+
+                // Add input event listener for handling answer submission
+                inputElement.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        const currentIndex = parseInt(event.target.dataset.index);
+
+                        // Store the user answer
+                        userAnswers[currentIndex] = event.target.value.trim();
+
+                        // Hide current input and show the user's entry
+                        inputContainer.style.display = 'none';
+                        showUserEntry(userAnswers[currentIndex], inputData.location);
+
+                        // Show the next input
+                        const nextInput = document.querySelector(`input[data-index='${currentIndex + 1}']`);
+                        if (nextInput) {
+                            const nextInputContainer = nextInput.parentElement;
+                            nextInputContainer.style.display = 'block'; // Show the next input
+                            nextInput.focus(); // Focus on the next input
+                        } else {
+                            // If all inputs are filled, check and show the submit button
+                            checkAllInputsFilled();
+                        }
+                    }
+                });
+
+                inputContainer.appendChild(inputElement);
+                const anchor = document.getElementById('anchor');
+                anchor.appendChild(inputContainer);
+
+                // Initially show only the first input
+                if (index === 0) {
+                    inputContainer.style.display = 'block';
+                    inputElement.focus();
+                }
+            });
+        }
+
+        // Function to show the user's entry in a div at the location of the last input
+        function showUserEntry(entry, location) {
+            const answerDisplay = document.createElement('div');
+            answerDisplay.className = 'answer-display';
+            answerDisplay.textContent = entry;
+            answerDisplay.style.top = location.top + '%';
+            answerDisplay.style.left = location.left + '%';
+
+            const anchor = document.getElementById('anchor');
+            anchor.appendChild(answerDisplay);
+        }
+
+        // Function to check if all inputs are filled and show the submit button
+        function checkAllInputsFilled() {
+            const allFilled = userAnswers.every(answer => answer !== '');
+
+            if (allFilled) {
+                document.getElementById('submitButton').style.display = 'block';
+            }
+        }
+
+        // Function to handle final submission of all answers
+        function handleSubmit() {
+            const allCorrect = userAnswers.every((answer, index) => answer === data.inputs[index].answer);
+
+            if (allCorrect) {
+                alert('All answers are correct!');
+            } else {
+                alert('Some answers are incorrect, please check again.');
+            }
+        }
+
+        // Create the input elements on page load
+        createInputs();
+
+        // Add the submit button to the body
+        const submitButton = document.createElement('button');
+        submitButton.id = 'submitButton';
+        submitButton.textContent = 'Submit';
+        submitButton.addEventListener('click', handleSubmit);
+        document.body.appendChild(submitButton);
+    </script>
+
+</body>
+</html>
