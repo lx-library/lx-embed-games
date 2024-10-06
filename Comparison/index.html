@@ -41,34 +41,104 @@
             background-color: #f2dede;
             color: #a94442;
         }
+        #timer, #score, #progress {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        #start-button {
+            font-size: 24px;
+            padding: 15px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div id="quiz-container">
-        <h2>Select the correct operator</h2>
-        <div id="question"></div>
-        <div>
-            <button onclick="checkAnswer('<')">&lt;</button>
-            <button onclick="checkAnswer('=')">=</button>
-            <button onclick="checkAnswer('>')">&gt;</button>
+        <div id="start-screen">
+            <h2>Comparison Quiz Game</h2>
+            <button id="start-button" onclick="startQuiz()">Start Quiz</button>
         </div>
-        <div id="feedback"></div>
+        <div id="quiz-content" style="display: none;">
+            <div id="timer">00:00</div>
+            <div id="score">Correct: 0 | Incorrect: 0</div>
+            <div id="progress">Question 1 of 50</div>
+            <h2>Select the correct operator</h2>
+            <div id="question"></div>
+            <div>
+                <button onclick="checkAnswer('<')">&lt;</button>
+                <button onclick="checkAnswer('=')">=</button>
+                <button onclick="checkAnswer('>')">&gt;</button>
+            </div>
+            <div id="feedback"></div>
+        </div>
     </div>
 
     <script>
-        const data = [
-            [23, 34],
-            [43, 24],
-            [89, 89],
-            [17, 96]
-        ];
+        function generateData() {
+            const data = [];
+            const equalPairs = 5;
+            
+            // Generate 45 pairs of random numbers
+            for (let i = 0; i < 45; i++) {
+                const a = Math.floor(Math.random() * 95) + 5;
+                let b;
+                do {
+                    b = Math.floor(Math.random() * 95) + 5;
+                } while (b === a);
+                data.push([a, b]);
+            }
+            
+            // Add 5 pairs of equal numbers
+            for (let i = 0; i < equalPairs; i++) {
+                const num = Math.floor(Math.random() * 95) + 5;
+                data.push([num, num]);
+            }
+            
+            // Shuffle the array
+            return data.sort(() => Math.random() - 0.5);
+        }
 
+        const data = generateData();
         let currentQuestion = 0;
+        let startTime;
+        let timerInterval;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+
+        function startQuiz() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-content').style.display = 'block';
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 1000);
+            displayQuestion();
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - startTime;
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = `Correct: ${correctAnswers} | Incorrect: ${incorrectAnswers}`;
+        }
+
+        function updateProgress() {
+            document.getElementById('progress').textContent = `Question ${currentQuestion + 1} of ${data.length}`;
+        }
 
         function displayQuestion() {
             const questionEl = document.getElementById('question');
             const [a, b] = data[currentQuestion];
             questionEl.textContent = `${a} ? ${b}`;
+            updateProgress();
         }
 
         function checkAnswer(operatorClicked) {
@@ -84,25 +154,43 @@
             if (operatorClicked === correctOperator) {
                 feedbackEl.textContent = 'Correct! Well done!';
                 feedbackEl.className = 'correct';
+                correctAnswers++;
+                setTimeout(() => {
+                    feedbackEl.style.display = 'none';
+                    moveToNextQuestion();
+                }, 100);
             } else {
                 feedbackEl.textContent = `Incorrect. The correct answer is ${correctOperator}`;
                 feedbackEl.className = 'incorrect';
+                incorrectAnswers++;
+                setTimeout(() => {
+                    feedbackEl.style.display = 'none';
+                    moveToNextQuestion();
+                }, 2000);
             }
-
+            
             feedbackEl.style.display = 'block';
-
-            setTimeout(() => {
-                feedbackEl.style.display = 'none';
-                currentQuestion++;
-                if (currentQuestion < data.length) {
-                    displayQuestion();
-                } else {
-                    document.getElementById('quiz-container').innerHTML = '<h2>Quiz completed!</h2>';
-                }
-            }, 2000);
+            updateScore();
         }
 
-        displayQuestion();
+        function moveToNextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < data.length) {
+                displayQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('quiz-content').innerHTML = `
+                <h2>Quiz completed!</h2>
+                <p>Your time: ${document.getElementById('timer').textContent}</p>
+                <p>Correct answers: ${correctAnswers}</p>
+                <p>Incorrect answers: ${incorrectAnswers}</p>
+            `;
+        }
     </script>
 </body>
 </html>
