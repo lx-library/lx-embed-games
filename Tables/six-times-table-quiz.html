@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6 Times Table Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 5px 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result, #counter, #progress {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        #quiz-area {
+            display: none;
+        }
+        #feedback {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>6 Times Table Quiz</h2>
+        <button id="start-button" onclick="startQuiz()">Start Quiz</button>
+        <div id="quiz-area">
+            <p id="counter">Time: 0s</p>
+            <p id="progress">Progress: 0/38</p>
+            <p id="question"></p>
+            <input type="number" id="answer" placeholder="Your answer">
+            <button onclick="checkAnswer()">Submit</button>
+        </div>
+    </div>
+    <div id="feedback"></div>
+
+    <script>
+        const timesTable = Array.from({length: 19}, (_, i) => (i + 2) * 6);
+        let currentQuestion;
+        let timer;
+        let timeElapsed = 0;
+        let questionsAnswered = 0;
+        let currentIndex = 0;
+
+        function startQuiz() {
+            document.getElementById('start-button').style.display = 'none';
+            document.getElementById('quiz-area').style.display = 'block';
+            timer = setInterval(updateCounter, 1000);
+            generateQuestion();
+            document.getElementById('answer').focus();
+        }
+
+        function updateCounter() {
+            timeElapsed++;
+            document.getElementById('counter').textContent = `Time: ${timeElapsed}s`;
+        }
+
+        function generateQuestion() {
+            currentQuestion = timesTable[currentIndex];
+            document.getElementById('question').textContent = `What is 6 × ${currentIndex + 2}?`;
+            document.getElementById('answer').value = '';
+            updateProgress();
+            document.getElementById('answer').focus();
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answer').value);
+            const feedbackElement = document.getElementById('feedback');
+            
+            if (userAnswer === currentQuestion) {
+                feedbackElement.textContent = 'Correct!';
+                feedbackElement.style.backgroundColor = '#4CAF50';
+                questionsAnswered++;
+                currentIndex = (currentIndex + 1) % 19;
+                if (questionsAnswered === 38) {
+                    endQuiz();
+                } else {
+                    generateQuestion();
+                }
+            } else {
+                feedbackElement.textContent = `Incorrect. The answer is ${currentQuestion}.`;
+                feedbackElement.style.backgroundColor = '#f44336';
+            }
+            
+            feedbackElement.style.display = 'block';
+            setTimeout(() => { feedbackElement.style.display = 'none'; }, 2000);
+        }
+
+        function updateProgress() {
+            document.getElementById('progress').textContent = `Progress: ${questionsAnswered}/38`;
+        }
+
+        function endQuiz() {
+            clearInterval(timer);
+            document.getElementById('quiz-area').innerHTML = `
+                <p>Congratulations! You've completed 2 full cycles.</p>
+                <p>Total time: ${timeElapsed} seconds</p>
+            `;
+            document.getElementById('start-button').style.display = 'block';
+            document.getElementById('start-button').textContent = 'Restart Quiz';
+        }
+
+        document.getElementById('answer').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>

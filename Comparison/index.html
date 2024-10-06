@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparison Quiz Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #quiz-container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #feedback {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .correct {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .incorrect {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h2>Select the correct operator</h2>
+        <div id="question"></div>
+        <div>
+            <button onclick="checkAnswer('<')">&lt;</button>
+            <button onclick="checkAnswer('=')">=</button>
+            <button onclick="checkAnswer('>')">&gt;</button>
+        </div>
+        <div id="feedback"></div>
+    </div>
+
+    <script>
+        const data = [
+            [23, 34],
+            [43, 24],
+            [89, 89],
+            [17, 96]
+        ];
+
+        let currentQuestion = 0;
+
+        function displayQuestion() {
+            const questionEl = document.getElementById('question');
+            const [a, b] = data[currentQuestion];
+            questionEl.textContent = `${a} ? ${b}`;
+        }
+
+        function checkAnswer(operatorClicked) {
+            const [a, b] = data[currentQuestion];
+            let correctOperator;
+
+            if (a < b) correctOperator = '<';
+            else if (a > b) correctOperator = '>';
+            else correctOperator = '=';
+
+            const feedbackEl = document.getElementById('feedback');
+            
+            if (operatorClicked === correctOperator) {
+                feedbackEl.textContent = 'Correct! Well done!';
+                feedbackEl.className = 'correct';
+            } else {
+                feedbackEl.textContent = `Incorrect. The correct answer is ${correctOperator}`;
+                feedbackEl.className = 'incorrect';
+            }
+
+            feedbackEl.style.display = 'block';
+
+            setTimeout(() => {
+                feedbackEl.style.display = 'none';
+                currentQuestion++;
+                if (currentQuestion < data.length) {
+                    displayQuestion();
+                } else {
+                    document.getElementById('quiz-container').innerHTML = '<h2>Quiz completed!</h2>';
+                }
+            }, 2000);
+        }
+
+        displayQuestion();
+    </script>
+</body>
+</html>

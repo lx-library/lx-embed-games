@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3 Times Table Quiz with Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        input, button {
+            font-size: 16px;
+            padding: 5px 10px;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .correct {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .incorrect {
+            background-color: #f44336;
+            color: white;
+        }
+        #timer {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        #start-button {
+            display: block;
+            margin: 20px auto;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>3 Times Table Quiz</h2>
+        <button id="start-button">Start Quiz</button>
+        <div id="timer" class="hidden">Time: 0s</div>
+        <div id="quiz-content" class="hidden">
+            <div id="question"></div>
+            <input type="number" id="answer" placeholder="Enter your answer">
+            <button onclick="checkAnswer()">Submit</button>
+            <div id="feedback" class="feedback"></div>
+        </div>
+    </div>
+
+    <script>
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let feedbackTimeout;
+        let startTime;
+        let timerInterval;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function initializeQuiz() {
+            for (let i = 1; i <= 12; i++) {
+                questions.push({ multiplicand: i, product: 3 * i });
+            }
+            shuffleArray(questions);
+        }
+
+        function startQuiz() {
+            document.getElementById('start-button').classList.add('hidden');
+            document.getElementById('timer').classList.remove('hidden');
+            document.getElementById('quiz-content').classList.remove('hidden');
+            startTime = new Date().getTime();
+            timerInterval = setInterval(updateTimer, 1000);
+            displayQuestion();
+        }
+
+        function updateTimer() {
+            const currentTime = new Date().getTime();
+            const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+            document.getElementById('timer').textContent = `Time: ${elapsedTime}s`;
+        }
+
+        function displayQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const question = questions[currentQuestionIndex];
+                document.getElementById('question').textContent = `3 x ${question.multiplicand} = ?`;
+                document.getElementById('answer').value = '';
+                document.getElementById('answer').focus();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            const endTime = new Date().getTime();
+            const totalTime = Math.floor((endTime - startTime) / 1000);
+            document.getElementById('quiz-content').innerHTML = `
+                <h3>Quiz completed!</h3>
+                <p>Total time: ${totalTime} seconds</p>
+            `;
+        }
+
+        function showFeedback(message, isCorrect) {
+            const feedbackElement = document.getElementById('feedback');
+            feedbackElement.textContent = message;
+            feedbackElement.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackElement.style.opacity = '1';
+
+            clearTimeout(feedbackTimeout);
+            feedbackTimeout = setTimeout(() => {
+                feedbackElement.style.opacity = '0';
+            }, 1000);
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answer').value);
+            const correctAnswer = questions[currentQuestionIndex].product;
+
+            if (userAnswer === correctAnswer) {
+                showFeedback("Correct!", true);
+            } else {
+                showFeedback(`Incorrect. The correct answer is ${correctAnswer}.`, false);
+            }
+
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        document.getElementById('answer').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        document.getElementById('start-button').addEventListener('click', startQuiz);
+
+        initializeQuiz();
+    </script>
+</body>
+</html>
