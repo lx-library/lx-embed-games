@@ -47,15 +47,31 @@
         #results ul {
             padding-left: 20px;
         }
+        #timer {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        #startGameButton {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+        }
+        #gameArea {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 id="skipH1">Skip Counting By 1's</h1>
-        <p>Enter the next number in the sequence</p>
-        <div id="numberDisplay"></div>
-        <input type="number" id="userInput" autofocus>
-        <div id="message"></div>
+        <div id="timer">Time: 0s</div>
+        <button id="startGameButton">Start Game</button>
+        <div id="gameArea">
+            <p>Enter the next number in the sequence</p>
+            <div id="numberDisplay"></div>
+            <input type="number" id="userInput" autofocus>
+            <div id="message"></div>
+        </div>
         <div id="results">
             <h2>Game Results</h2>
             <div id="correctInputs"></div>
@@ -71,11 +87,16 @@
         const correctInputsDiv = document.getElementById('correctInputs');
         const incorrectInputsDiv = document.getElementById('incorrectInputs');
         const skipH1 = document.getElementById('skipH1');
+        const timerDisplay = document.getElementById('timer');
+        const startGameButton = document.getElementById('startGameButton');
+        const gameArea = document.getElementById('gameArea');
 
         let currentNumber = 0;
         let correctInputs = [];
         let incorrectInputs = [];
         let skipBy = 1;
+        let timer = 0;
+        let timerInterval;
 
         function getUrlParameter(name) {
             const urlParams = new URLSearchParams(window.location.search);
@@ -88,16 +109,25 @@
             skipH1.innerText = `Skip Counting By ${skipBy}'s`;
         }
 
-        function processSkip() {
-            console.log(`Skipping by ${skipBy} steps...`);
-            // Your skipping logic here
-            // For example:
-            let currentStep = 0;
-            currentStep += skipBy;
-            console.log(`Current step is now: ${currentStep}`);
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timer++;
+                timerDisplay.innerText = `Time: ${timer}s`;
+            }, 1000);
         }
 
-        processSkip();
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function startGame() {
+            startGameButton.style.display = 'none';
+            gameArea.style.display = 'block';
+            startTimer();
+            userInput.focus();
+        }
+
+        startGameButton.addEventListener('click', startGame);
 
         userInput.addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
@@ -129,6 +159,7 @@
         }
 
         function endGame() {
+            stopTimer();
             userInput.disabled = true;
             message.textContent = 'Game Over! See the results below.';
             message.style.color = 'blue';
@@ -139,6 +170,7 @@
             incorrectInputsDiv.innerHTML = '<h3>Incorrect Inputs:</h3><ul>' + 
                 incorrectInputs.map(input => `<li>${input}</li>`).join('') + '</ul>';
             
+            resultsDiv.innerHTML += `<p>Time taken: ${timer} seconds</p>`;
             resultsDiv.style.display = 'block';
         }
     </script>
