@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Times Table Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #problem, #feedback {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #answer {
+            font-size: 18px;
+            padding: 5px;
+            width: 100px;
+        }
+        #startBtn {
+            font-size: 18px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #timer {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1 id="title">Times Table Test</h1>
+        <div id="problem" style="display: none;"></div>
+        <input type="number" id="answer" style="display: none;">
+        <div id="feedback" style="display: none;"></div>
+        <button id="startBtn">Start</button>
+        <div id="timer" style="display: none;">Time: 0s</div>
+    </div>
+
+    <script>
+        const problems = Array.from({length: 12}, (_, i) => i + 1);
+        let currentProblem;
+        let remainingProblems;
+        let startTime;
+        let timerInterval;
+        let tableNumber;
+
+        const problemEl = document.getElementById('problem');
+        const answerEl = document.getElementById('answer');
+        const feedbackEl = document.getElementById('feedback');
+        const startBtn = document.getElementById('startBtn');
+        const timerEl = document.getElementById('timer');
+        const titleEl = document.getElementById('title');
+
+        // Get the table number from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        tableNumber = parseInt(urlParams.get('table')) || 3;
+
+        // Update the title
+        titleEl.textContent = `${tableNumber} Times Table Test`;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startTest() {
+            remainingProblems = shuffle([...problems]);
+            startBtn.style.display = 'none';
+            problemEl.style.display = 'block';
+            answerEl.style.display = 'block';
+            timerEl.style.display = 'block';
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+            nextProblem();
+        }
+
+        function nextProblem() {
+            if (remainingProblems.length === 0) {
+                endTest();
+                return;
+            }
+            currentProblem = remainingProblems.pop();
+            problemEl.textContent = `${currentProblem} x ${tableNumber} = `;
+            answerEl.value = '';
+            answerEl.focus();
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(answerEl.value);
+            const correctAnswer = currentProblem * tableNumber;
+            if (userAnswer === correctAnswer) {
+                nextProblem();
+            } else {
+                feedbackEl.textContent = `Correct answer: ${correctAnswer}`;
+                feedbackEl.style.display = 'block';
+                remainingProblems.unshift(currentProblem);
+                setTimeout(() => {
+                    feedbackEl.style.display = 'none';
+                    nextProblem();
+                }, 1000);
+            }
+        }
+
+        function updateTimer() {
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            timerEl.textContent = `Time: ${elapsedTime}s`;
+        }
+
+        function endTest() {
+            clearInterval(timerInterval);
+            problemEl.style.display = 'none';
+            answerEl.style.display = 'none';
+            feedbackEl.textContent = 'Congratulations! You completed the test.';
+            feedbackEl.style.display = 'block';
+        }
+
+        startBtn.addEventListener('click', startTest);
+        answerEl.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>
