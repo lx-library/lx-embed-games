@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Recording App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #startButton, #recordButton, #downloadButton {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 10px;
+        }
+        #timer, #paragraph {
+            margin: 20px 0;
+        }
+        #paragraph {
+            text-align: left;
+            max-width: 600px;
+        }
+        #audioPlayer {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="startButton">Start</button>
+        <div id="paragraph" style="display: none;"></div>
+        <div id="timer" style="display: none;"></div>
+        <button id="recordButton" style="display: none;">Stop Recording</button>
+        <audio id="audioPlayer" controls style="display: none;"></audio>
+        <button id="downloadButton" style="display: none;">Download Recording</button>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const paragraph = document.getElementById('paragraph');
+        const timer = document.getElementById('timer');
+        const recordButton = document.getElementById('recordButton');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const downloadButton = document.getElementById('downloadButton');
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let countdownInterval;
+        let audioBlob;
+
+        startButton.addEventListener('click', startRecording);
+        recordButton.addEventListener('click', stopRecording);
+        downloadButton.addEventListener('click', downloadRecording);
+
+        function startRecording() {
+            startButton.style.display = 'none';
+            paragraph.style.display = 'block';
+            timer.style.display = 'block';
+            recordButton.style.display = 'inline-block';
+            audioPlayer.style.display = 'none';
+            downloadButton.style.display = 'none';
+
+            paragraph.textContent = "The ocean is one of the most important ecosystems on Earth. It covers over 70% of the planet's surface and is home to a wide variety of plants and animals. The ocean provides food for millions of people and helps regulate the climate by absorbing heat from the sun. Unfortunately, human activities like overfishing and pollution are damaging this vital resource. Plastic waste, for example, is harming marine life and affecting the entire food chain."
+
+
+            // Start the timer
+            let timeLeft = 30;
+            timer.textContent = `Time left: ${timeLeft} seconds`;
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                timer.textContent = `Time left: ${timeLeft} seconds`;
+                if (timeLeft <= 0) {
+                    stopRecording();
+                }
+            }, 1000);
+
+            // Start recording
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                    mediaRecorder.start();
+
+                    mediaRecorder.addEventListener("dataavailable", event => {
+                        audioChunks.push(event.data);
+                    });
+                });
+        }
+
+        function stopRecording() {
+            clearInterval(countdownInterval);
+            timer.style.display = 'none';
+            recordButton.style.display = 'none';
+
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaRecorder.addEventListener("stop", () => {
+                    audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.style.display = 'block';
+                    downloadButton.style.display = 'inline-block';
+                });
+            }
+        }
+
+        function downloadRecording() {
+            if (audioBlob) {
+                const url = URL.createObjectURL(audioBlob);
+                const a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style = "display: none";
+                a.href = url;
+                a.download = "recording.webm";
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+        }
+    </script>
+</body>
+</html>
