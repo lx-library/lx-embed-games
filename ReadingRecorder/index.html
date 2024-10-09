@@ -61,9 +61,37 @@
         let countdownInterval;
         let audioBlob;
 
+        let grade = 1
+
         startButton.addEventListener('click', startRecording);
         recordButton.addEventListener('click', stopRecording);
         downloadButton.addEventListener('click', downloadRecording);
+
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        const urlGrade = getUrlParameter('grade');
+        if (urlGrade && !isNaN(urlGrade)) {
+            grade = parseInt(urlGrade, 10);
+            //skipH1.innerText = `Skip Counting By ${skipBy}'s`;
+        }
+
+        function getParagraph(){
+            switch(grade){
+                case 1:
+                    return `Once upon a time, in a big green forest, there lived a little rabbit named Ruby. Ruby loved to hop around and play with her friends. One sunny day, she met a squirrel named Sam. "Hello, Ruby!" said Sam. "Do you want to play?" Ruby smiled and said, "Yes, let's play hide and seek!" Sam ran to hide behind a tall tree. Ruby closed her eyes and counted, "One, two, three, four, five!" She opened her eyes and started looking. She found Sam behind the tree and giggled. They played all afternoon until the sun started to set. Ruby and Sam sat together, watching the sky turn pink and orange. "What a fun day!" said Ruby. "Let's play again tomorrow!"`
+                case 2: 
+                    return `Lily loved going to the park with her little dog, Max. Every afternoon, they walked down the street to their favorite spot. Max always wagged his tail and barked happily when he saw the park’s big trees and green grass. One day, when they got to the park, they saw something new. A big, colorful kite was flying high in the sky! “Look, Max!” Lily said excitedly. The kite was shaped like a butterfly, with bright blue and yellow wings. Max barked and jumped up, trying to catch the kite, but it was too high. Lily laughed as Max chased the kite's shadow on the ground. They played together for a long time, running and laughing, until the sun began to set. Lily gave Max a hug and said, “I love our park days!”`
+                case 3: 
+                    return `Tommy loved exploring the woods near his house. One day, he decided to take a new path he had never seen before. As he walked, he noticed a small stream flowing gently over the rocks. The water was clear, and he could see tiny fish swimming around. Tommy followed the stream until he reached a hidden pond surrounded by tall trees. Suddenly, he heard a rustling sound. He looked up and saw a family of deer drinking from the pond. Tommy stayed very still, not wanting to scare them. The deer didn’t notice him and continued sipping the water peacefully. After a while, they walked quietly back into the woods. Tommy smiled to himself, happy that he had found such a beautiful and quiet place. “I’ll come back here tomorrow,” he thought.`
+                case 8:
+                    return "The ocean is one of the most important ecosystems on Earth. It covers over 70% of the planet's surface and is home to a wide variety of plants and animals. The ocean provides food for millions of people and helps regulate the climate by absorbing heat from the sun. Unfortunately, human activities like overfishing and pollution are damaging this vital resource. Plastic waste, for example, is harming marine life and affecting the entire food chain."
+                default:
+                    return "No Grade selected"
+            }
+        }
 
         function startRecording() {
             startButton.style.display = 'none';
@@ -73,11 +101,11 @@
             audioPlayer.style.display = 'none';
             downloadButton.style.display = 'none';
 
-            paragraph.textContent = "The ocean is one of the most important ecosystems on Earth. It covers over 70% of the planet's surface and is home to a wide variety of plants and animals. The ocean provides food for millions of people and helps regulate the climate by absorbing heat from the sun. Unfortunately, human activities like overfishing and pollution are damaging this vital resource. Plastic waste, for example, is harming marine life and affecting the entire food chain."
+            paragraph.textContent = getParagraph()
 
 
             // Start the timer
-            let timeLeft = 30;
+            let timeLeft = 90;
             timer.textContent = `Time left: ${timeLeft} seconds`;
             countdownInterval = setInterval(() => {
                 timeLeft--;
