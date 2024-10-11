@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Guessing Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 5px;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Type what you see</h2>
+        <img id="image" alt="Guess the image" src="/api/placeholder/400/300">
+        <br>
+        <input type="text" id="guess" placeholder="Enter your guess">
+        <br>
+        <button onclick="checkAnswer()">Submit</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const data = {
+            imgSrc: "assets/cow.png",
+            answer: "cow"
+        };
+
+        document.getElementById('image').src = data.imgSrc;
+
+        function checkAnswer() {
+            const guess = document.getElementById('guess').value.toLowerCase().trim();
+            const result = document.getElementById('result');
+
+            if (guess === data.answer) {
+                result.textContent = "Congratulations! You guessed correctly!";
+                result.style.color = "green";
+            } else {
+                result.textContent = `Sorry, the correct answer is "${data.answer}".`;
+                result.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>

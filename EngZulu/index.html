@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English to Zulu Quiz - 100 Common Words</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        #englishWord {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        #result {
+            font-weight: bold;
+            margin-top: 10px;
+            height: 24px;
+        }
+        #score {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>English to Zulu Quiz - 100 Common Words</h1>
+    <p>Type the Zulu translation for the given English word and hit enter.</p>
+    <div id="englishWord"></div>
+    <input type="text" id="zuluInput" placeholder="Enter the Zulu translation" autofocus>
+    <div id="result"></div>
+    <div id="score"></div>
+
+    <script>
+        const data = [
+            { question: "hello", answer: "sawubona" },
+            { question: "goodbye", answer: "hamba kahle" },
+            { question: "yes", answer: "yebo" },
+            { question: "no", answer: "cha" },
+            { question: "please", answer: "ngicela" },
+            { question: "thank you", answer: "ngiyabonga" },
+            { question: "sorry", answer: "ngiyaxolisa" },
+            { question: "I", answer: "mina" },
+            { question: "you", answer: "wena" },
+            { question: "he/she", answer: "yena" },
+            { question: "we", answer: "thina" },
+            { question: "they", answer: "bona" },
+            { question: "what", answer: "ini" },
+            { question: "where", answer: "kuphi" },
+            { question: "when", answer: "nini" },
+            { question: "why", answer: "ngani" },
+            { question: "how", answer: "kanjani" },
+            { question: "who", answer: "ubani" },
+            { question: "which", answer: "yiphi" },
+            { question: "and", answer: "futhi" },
+            { question: "or", answer: "noma" },
+            { question: "but", answer: "kodwa" },
+            { question: "because", answer: "ngoba" },
+            { question: "if", answer: "uma" },
+            { question: "not", answer: "cha" },
+            { question: "all", answer: "konke" },
+            { question: "many", answer: "amaningi" },
+            { question: "some", answer: "amanye" },
+            { question: "few", answer: "ambalwa" },
+            { question: "other", answer: "okunye" },
+            { question: "one", answer: "kunye" },
+            { question: "two", answer: "kubili" },
+            { question: "three", answer: "kuthathu" },
+            { question: "four", answer: "kune" },
+            { question: "five", answer: "kuhlanu" },
+            { question: "big", answer: "khulu" },
+            { question: "small", answer: "ncane" },
+            { question: "long", answer: "de" },
+            { question: "short", answer: "fushane" },
+            { question: "old", answer: "dala" },
+            { question: "new", answer: "sha" },
+            { question: "good", answer: "hle" },
+            { question: "bad", answer: "bi" },
+            { question: "hot", answer: "shisa" },
+            { question: "cold", answer: "banda" },
+            { question: "full", answer: "gcwele" },
+            { question: "empty", answer: "ze" },
+            { question: "to be", answer: "ukuba" },
+            { question: "to have", answer: "ukuba na" },
+            { question: "to do", answer: "ukwenza" },
+            { question: "to say", answer: "ukusho" },
+            { question: "to go", answer: "ukuya" },
+            { question: "to come", answer: "ukuza" },
+            { question: "to see", answer: "ukubona" },
+            { question: "to know", answer: "ukwazi" },
+            { question: "to get", answer: "ukuthola" },
+            { question: "to make", answer: "ukwenza" },
+            { question: "to think", answer: "ukucabanga" },
+            { question: "to take", answer: "ukuthatha" },
+            { question: "to give", answer: "ukunika" },
+            { question: "to find", answer: "ukuthola" },
+            { question: "to listen", answer: "ukulalela" },
+            { question: "to work", answer: "ukusebenza" },
+            { question: "to call", answer: "ukubiza" },
+            { question: "to try", answer: "ukuzama" },
+            { question: "to ask", answer: "ukubuza" },
+            { question: "to need", answer: "ukudinga" },
+            { question: "to feel", answer: "ukuzwa" },
+            { question: "to become", answer: "ukuba" },
+            { question: "to leave", answer: "ukushiya" },
+            { question: "to put", answer: "ukubeka" },
+            { question: "to mean", answer: "ukuchaza" },
+            { question: "to keep", answer: "ukugcina" },
+            { question: "to let", answer: "ukuvumela" },
+            { question: "to begin", answer: "ukuqala" },
+            { question: "to seem", answer: "ukubonakala" },
+            { question: "to help", answer: "ukusiza" },
+            { question: "to talk", answer: "ukukhuluma" },
+            { question: "to turn", answer: "ukuphenduka" },
+            { question: "to start", answer: "ukuqala" },
+            { question: "to show", answer: "ukubonisa" },
+            { question: "to hear", answer: "ukuzwa" },
+            { question: "to play", answer: "ukudlala" },
+            { question: "to run", answer: "ukugijima" },
+            { question: "to move", answer: "ukuhamba" },
+            { question: "to live", answer: "ukuphila" },
+            { question: "to believe", answer: "ukukholwa" },
+            { question: "to bring", answer: "ukuletha" },
+            { question: "to happen", answer: "ukwenzeka" },
+            { question: "to write", answer: "ukubhala" },
+            { question: "to sit", answer: "ukuhlala" },
+            { question: "to stand", answer: "ukuma" },
+            { question: "to lose", answer: "ukulahlekelwa" },
+            { question: "to pay", answer: "ukukhokha" },
+            { question: "to meet", answer: "ukuhlangana" },
+            { question: "to include", answer: "ukufaka" },
+            { question: "to continue", answer: "ukuqhubeka" },
+            { question: "to set", answer: "ukubeka" },
+            { question: "to learn", answer: "ukufunda" },
+            { question: "to change", answer: "ukushintsha" },
+            { question: "to lead", answer: "ukukhokela" },
+            { question: "to understand", answer: "ukuqonda" },
+            { question: "to watch", answer: "ukubukela" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctScore = 0;
+        let incorrectScore = 0;
+
+        const englishWordDisplay = document.getElementById('englishWord');
+        const zuluInput = document.getElementById('zuluInput');
+        const resultDisplay = document.getElementById('result');
+        const scoreDisplay = document.getElementById('score');
+
+        function displayQuestion() {
+            englishWordDisplay.textContent = data[currentQuestionIndex].question;
+            zuluInput.value = '';
+            resultDisplay.textContent = '';
+            zuluInput.focus();
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = `Correct: ${correctScore} | Incorrect: ${incorrectScore}`;
+        }
+
+        function checkAnswer() {
+            const userAnswer = zuluInput.value.trim().toLowerCase();
+            const correctAnswer = data[currentQuestionIndex].answer.toLowerCase();
+
+            if (userAnswer === correctAnswer) {
+                resultDisplay.textContent = "Correct!";
+                resultDisplay.style.color = "green";
+                correctScore++;
+                updateScore();
+                
+                // Move to next question after a short delay
+                setTimeout(() => {
+                    currentQuestionIndex = (currentQuestionIndex + 1) % data.length;
+                    displayQuestion();
+                }, 1000);
+            } else {
+                resultDisplay.textContent = `The correct answer is: ${correctAnswer}`;
+                resultDisplay.style.color = "red";
+                incorrectScore++;
+                updateScore();
+                
+                // Clear the result and allow retry after a short delay
+                setTimeout(() => {
+                    resultDisplay.textContent = '';
+                    zuluInput.value = '';
+                    zuluInput.focus();
+                }, 1000);
+            }
+        }
+
+        zuluInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                checkAnswer();
+            }
+        });
+
+        // Initialize the quiz
+        displayQuestion();
+        updateScore();
+    </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English to Zulu Quiz - 100 Common Words</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        #englishWord {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        #result {
+            font-weight: bold;
+            margin-top: 10px;
+            height: 24px;
+        }
+        #score {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>English to Afrikaans Quiz - 25 Common Words</h1>
+    <p>Type the Afrikaans translation for the given English word and hit enter.</p>
+    <div id="englishWord"></div>
+    <input type="text" id="zuluInput" placeholder="Enter the Zulu translation" autofocus>
+    <div id="result"></div>
+    <div id="score"></div>
+
+    <script>
+        const data = [
+            { question: "the", answer: "die" },
+            { question: "is", answer: "is" },
+            { question: "I", answer: "ek" },
+            { question: "you", answer: "jy" },
+            { question: "he", answer: "hy" },
+            { question: "she", answer: "sy" },
+            { question: "we", answer: "ons" },
+            { question: "they", answer: "hulle" },
+            { question: "this", answer: "hierdie" },
+            { question: "that", answer: "daardie" },
+            { question: "what", answer: "wat" },
+            { question: "who", answer: "wie" },
+            { question: "where", answer: "waar" },
+            { question: "when", answer: "wanneer" },
+            { question: "why", answer: "hoekom" },
+            { question: "how", answer: "hoe" },
+            { question: "yes", answer: "ja" },
+            { question: "no", answer: "nee" },
+            { question: "please", answer: "asseblief" },
+            { question: "thank you", answer: "dankie" },
+            { question: "goodbye", answer: "totsiens" },
+            { question: "good", answer: "goed" },
+            { question: "bad", answer: "sleg" },
+            { question: "morning", answer: "oggend" },
+            { question: "night", answer: "nag" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctScore = 0;
+        let incorrectScore = 0;
+
+        const englishWordDisplay = document.getElementById('englishWord');
+        const zuluInput = document.getElementById('zuluInput');
+        const resultDisplay = document.getElementById('result');
+        const scoreDisplay = document.getElementById('score');
+
+        function displayQuestion() {
+            englishWordDisplay.textContent = data[currentQuestionIndex].question;
+            zuluInput.value = '';
+            resultDisplay.textContent = '';
+            zuluInput.focus();
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = `Correct: ${correctScore} | Incorrect: ${incorrectScore}`;
+        }
+
+        function checkAnswer() {
+            const userAnswer = zuluInput.value.trim().toLowerCase();
+            const correctAnswer = data[currentQuestionIndex].answer.toLowerCase();
+
+            if (userAnswer === correctAnswer) {
+                resultDisplay.textContent = "Correct!";
+                resultDisplay.style.color = "green";
+                correctScore++;
+                updateScore();
+                
+                // Move to next question after a short delay
+                setTimeout(() => {
+                    currentQuestionIndex = (currentQuestionIndex + 1) % data.length;
+                    displayQuestion();
+                }, 1000);
+            } else {
+                resultDisplay.textContent = `The correct answer is: ${correctAnswer}`;
+                resultDisplay.style.color = "red";
+                incorrectScore++;
+                updateScore();
+                
+                // Clear the result and allow retry after a short delay
+                setTimeout(() => {
+                    resultDisplay.textContent = '';
+                    zuluInput.value = '';
+                    zuluInput.focus();
+                }, 1000);
+            }
+        }
+
+        zuluInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                checkAnswer();
+            }
+        });
+
+        // Initialize the quiz
+        displayQuestion();
+        updateScore();
+    </script>
+</body>
+</html>
