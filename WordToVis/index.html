@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word to Viseme Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input {
+            padding: 10px;
+            width: 200px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Word to Viseme Converter</h1>
+    <input type="text" id="wordInput" placeholder="Enter a word" />
+    <button id="submitBtn">Submit</button>
+
+    <div class="result" id="resultContainer"></div>
+
+    <script>
+        // Mapping of phonemes to visemes
+        const phonemeToViseme = {
+            'p': 'V1', 'b': 'V1', 'm': 'V1', // Viseme 1
+            'f': 'V2', 'v': 'V2',            // Viseme 2
+            't': 'V3', 'd': 'V3', 'n': 'V3', // Viseme 3
+            'k': 'V4', 'g': 'V4',            // Viseme 4
+            's': 'V5', 'z': 'V5', 'sh': 'V5', // Viseme 5
+            'ch': 'V6', 'j': 'V6',           // Viseme 6
+            'th': 'V7',                       // Viseme 7
+            'a': 'V8', 'e': 'V8', 'i': 'V8', 'o': 'V8', 'u': 'V8', // Viseme 8
+            'w': 'V9', 'y': 'V9',            // Viseme 9
+            'l': 'V10'                       // Viseme 10
+        };
+
+        // Function to convert a word into an array of visemes
+        function wordToVisemes(word) {
+            const visemeArray = [];
+            const lowerCaseWord = word.toLowerCase();
+            const phonemeRegex = /[pbm]|[fv]|[tdn]|[kg]|[sz]|[sh]|[ch]|[j]|[th]|[aeiou]|[wy]|[l]/g;
+            const phonemes = lowerCaseWord.match(phonemeRegex);
+
+            if (phonemes) {
+                for (const phoneme of phonemes) {
+                    const viseme = phonemeToViseme[phoneme];
+                    if (viseme) {
+                        visemeArray.push(viseme);
+                    }
+                }
+            }
+            return visemeArray;
+        }
+
+        // Event listener for the submit button
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            const inputWord = document.getElementById('wordInput').value;
+            const visemes = wordToVisemes(inputWord);
+            const resultContainer = document.getElementById('resultContainer');
+
+            // Display the result in the DOM
+            resultContainer.textContent = `Visemes for '${inputWord}': [${visemes.join(', ')}]`;
+        });
+    </script>
+
+</body>
+</html>

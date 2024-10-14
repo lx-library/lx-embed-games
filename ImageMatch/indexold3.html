@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Matching Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        #game-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 600px;
+        }
+        .image-container {
+            width: 30%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+        }
+        .answer-container {
+            width: 30%;
+            height: 50px;
+            border: 2px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .draggable {
+            cursor: move;
+            user-select: none;
+            padding: 5px 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #999;
+            border-radius: 4px;
+        }
+        .draggable.dragging {
+            opacity: 0.5;
+        }
+        #submit-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emotion Matching Game</h1>
+    <div id="game-container"></div>
+    <button id="submit-btn">Check Answers</button>
+
+    <script>
+        const data = [
+            {
+                imgSrc: 'assets/gelukig.png',
+                answer: 'gelukig'
+            },
+            {
+                imgSrc: 'assets/ongelukig.png',
+                answer: 'ongelukig'
+            },
+            {
+                imgSrc: 'assets/kwaad.png',
+                answer: 'kwaad'
+            }
+        ];
+        
+
+        let shuffledImageOrder;
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function createGame() {
+            const gameContainer = document.getElementById('game-container');
+            shuffledImageOrder = shuffleArray([...data]);
+            const shuffledAnswers = shuffleArray([...data]);
+
+            // Create image containers
+            shuffledImageOrder.forEach((item, index) => {
+                const imageContainer = document.createElement('div');
+                imageContainer.className = 'image-container';
+                imageContainer.innerHTML = `<img src="${item.imgSrc}" alt="Emotion ${index + 1}">`;
+                imageContainer.dataset.correctAnswer = item.answer;
+                gameContainer.appendChild(imageContainer);
+            });
+
+            // Create answer containers
+            shuffledAnswers.forEach((item, index) => {
+                const answerContainer = document.createElement('div');
+                answerContainer.className = 'answer-container';
+                
+                const draggable = document.createElement('div');
+                draggable.className = 'draggable';
+                draggable.textContent = item.answer;
+                draggable.draggable = true;
+                
+                answerContainer.appendChild(draggable);
+                gameContainer.appendChild(answerContainer);
+            });
+
+            // Set up drag and drop
+            const draggables = document.querySelectorAll('.draggable');
+            const containers = document.querySelectorAll('.answer-container');
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', () => {
+                    draggable.classList.add('dragging');
+                });
+
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('dragging');
+                });
+            });
+
+            containers.forEach(container => {
+                container.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const draggable = document.querySelector('.dragging');
+                    if (draggable) {
+                        const draggableContainer = draggable.parentNode;
+                        if (container !== draggableContainer) {
+                            // Swap the draggable elements
+                            const targetDraggable = container.querySelector('.draggable');
+                            if (targetDraggable) {
+                                draggableContainer.appendChild(targetDraggable);
+                            }
+                            container.appendChild(draggable);
+                        }
+                    }
+                });
+            });
+        }
+
+        function checkAnswers() {
+            const imageContainers = document.querySelectorAll('.image-container');
+            const answerContainers = document.querySelectorAll('.answer-container');
+            let correct = 0;
+            
+            imageContainers.forEach((imgContainer, index) => {
+                const correctAnswer = imgContainer.dataset.correctAnswer;
+                const userAnswer = answerContainers[index].querySelector('.draggable').textContent;
+                
+                if (userAnswer === correctAnswer) {
+                    correct++;
+                    answerContainers[index].style.backgroundColor = '#d4edda';
+                } else {
+                    answerContainers[index].style.backgroundColor = '#f8d7da';
+                }
+            });
+
+            alert(`You got ${correct} out of ${imageContainers.length} correct!`);
+        }
+
+        createGame();
+
+        document.getElementById('submit-btn').addEventListener('click', checkAnswers);
+    </script>
+</body>
+</html>

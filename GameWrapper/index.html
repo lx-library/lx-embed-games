@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Centered 16:9 Div</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      background-color: #f0f0f0;
+    }
+
+    .landscape-box {
+      width: 100%;
+      height: 56vw;
+      background-color: aqua;
+      /* transition: transform 0.5s ease; */
+    }
+    .content {
+      background-color: blue;
+      width: 100%;
+      height: 100%;
+    }
+
+    @media (orientation: portrait) {
+      .landscape-box {
+        width: 56vh;
+        height: 100%;
+        
+        /* max-width: none;
+        width: 100vh;
+        height: calc(100vw * 9 / 16); */
+      }
+      .content {
+        transform: rotate(90deg);
+        transform-origin: center center;
+        height: 56%;
+        width: 200%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="landscape-box">
+    <div class="content">content</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Translation Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="/api/placeholder/400/300" alt="Language Learning Image">
+        <br>
+        <button id="playButton">Play Audio</button>
+        <br>
+        <input type="text" id="translationInput" placeholder="Enter your translation here">
+        <br>
+        <button id="submitButton">Submit</button>
+        <p id="feedback"></p>
+    </div>
+
+    <audio id="audioPlayer" src="assets/1.m4a"></audio>
+
+    <script>
+        const playButton = document.getElementById('playButton');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const translationInput = document.getElementById('translationInput');
+        const submitButton = document.getElementById('submitButton');
+        const feedback = document.getElementById('feedback');
+
+        playButton.addEventListener('click', () => {
+            audioPlayer.play();
+        });
+
+        submitButton.addEventListener('click', () => {
+            const userTranslation = translationInput.value.trim().toLowerCase();
+            const correctTranslation = "hello"; // Replace with the correct translation
+
+            if (userTranslation === correctTranslation) {
+                feedback.textContent = "Correct! Great job!";
+                feedback.style.color = "green";
+            } else {
+                feedback.textContent = "Not quite. Try again!";
+                feedback.style.color = "red";
+            }
+        });
+    </script>
+</body>
+</html>

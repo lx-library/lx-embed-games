@@ -84,7 +84,8 @@
 <body>
     
     <div id="container">
-        <div id="start_button">
+        <button id="navigateButton">navigateButton</button>
+        <!-- <div id="start_button">
             <button id="button">START</button>
         </div>
         <div id="buttons">
@@ -106,9 +107,14 @@
             </div>
             <canvas id="canvas"></canvas>
             <div id="lava"></div>
-        </div>
+        </div> -->
     </div>
     <!-- <script src="./Templates/GameToolbar/gameToolbar.js"></script> -->
+     <script>
+            document.getElementById("navigateButton").onclick = function() {
+            window.location.href = "/path/to/folder"; // Replace with the folder's relative or absolute path
+        };
+     </script>
     <script src="./index.js"></script>
         
 </body>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Sorting Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #game-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #word-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        #word-list li {
+            background-color: #e0e0e0;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: move;
+        }
+        #submit-btn {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Sort the Words</h1>
+        <p>Drag and drop the words to sort them alphabetically.</p>
+        <ul id="word-list"></ul>
+        <button id="submit-btn">Submit</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const words = ["ball", "apple", "Jessica"];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function createWordList() {
+            const wordList = document.getElementById('word-list');
+            shuffleArray(words);
+            words.forEach(word => {
+                const li = document.createElement('li');
+                li.textContent = word;
+                li.draggable = true;
+                wordList.appendChild(li);
+            });
+        }
+
+        function addDragAndDropListeners() {
+            const wordList = document.getElementById('word-list');
+            let draggedItem = null;
+
+            wordList.addEventListener('dragstart', function(e) {
+                draggedItem = e.target;
+                setTimeout(() => e.target.style.display = 'none', 0);
+            });
+
+            wordList.addEventListener('dragend', function(e) {
+                setTimeout(() => e.target.style.display = '', 0);
+                draggedItem = null;
+            });
+
+            wordList.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+
+            wordList.addEventListener('dragenter', function(e) {
+                e.preventDefault();
+                if (e.target.tagName === 'LI') {
+                    e.target.style.backgroundColor = '#f0f0f0';
+                }
+            });
+
+            wordList.addEventListener('dragleave', function(e) {
+                if (e.target.tagName === 'LI') {
+                    e.target.style.backgroundColor = '#e0e0e0';
+                }
+            });
+
+            wordList.addEventListener('drop', function(e) {
+                if (e.target.tagName === 'LI') {
+                    e.target.style.backgroundColor = '#e0e0e0';
+                    if (e.target !== draggedItem) {
+                        const allItems = [...wordList.querySelectorAll('li')];
+                        const fromIndex = allItems.indexOf(draggedItem);
+                        const toIndex = allItems.indexOf(e.target);
+                        if (fromIndex < toIndex) {
+                            e.target.parentNode.insertBefore(draggedItem, e.target.nextSibling);
+                        } else {
+                            e.target.parentNode.insertBefore(draggedItem, e.target);
+                        }
+                    }
+                }
+            });
+        }
+
+        function checkOrder() {
+            const wordList = document.getElementById('word-list');
+            const currentOrder = [...wordList.querySelectorAll('li')].map(li => li.textContent);
+            const sortedWords = [...words].sort((a, b) => a.localeCompare(b));
+            const result = document.getElementById('result');
+            
+            if (JSON.stringify(currentOrder) === JSON.stringify(sortedWords)) {
+                result.textContent = 'Correct! The words are in alphabetical order.';
+                result.style.color = 'green';
+            } else {
+                result.textContent = 'Incorrect. Try again!';
+                result.style.color = 'red';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createWordList();
+            addDragAndDropListeners();
+            document.getElementById('submit-btn').addEventListener('click', checkOrder);
+        });
+    </script>
+</body>
+</html>

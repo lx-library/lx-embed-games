@@ -56,6 +56,9 @@
         const audioPlayer = document.getElementById('audioPlayer');
         const downloadButton = document.getElementById('downloadButton');
 
+
+  
+
         let mediaRecorder;
         let audioChunks = [];
         let countdownInterval;
@@ -77,6 +80,33 @@
             grade = parseInt(urlGrade, 10);
             //skipH1.innerText = `Skip Counting By ${skipBy}'s`;
         }
+
+        async function uploadFile(file) {
+            const url = 'http://198.162.0.187:5432/whisper-stt';
+
+            // Create form data
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // Send the POST request
+                const response = await fetch(url, {
+                method: 'POST',
+                body: formData
+                });
+
+                if (!response.ok) {
+                throw new Error('Network response was not ok');
+                }
+
+                // Parse and handle the response
+                const result = await response.json();
+                console.log('File uploaded successfully:', result);
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            }
+        }
+
 
         function getParagraph(){
             switch(grade){
@@ -154,6 +184,10 @@
                 a.download = "recording.webm";
                 a.click();
                 window.URL.revokeObjectURL(url);
+
+                // Convert the Blob to a File and call the upload function
+                const file = new File([audioBlob], "recording.webm", { type: "audio/webm" });
+                uploadFile(file);  // Call the upload function here
             }
         }
     </script>

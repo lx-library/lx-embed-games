@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Learning: English to Afrikaans</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .language-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        button, input[type="submit"] {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .listen-icon::before {
+            content: "\1F50A";
+            margin-right: 5px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        #feedback {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        #word{
+            color: blue;
+            text-align: center;
+            text-transform: capitalize;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="word"></h1>
+    <div class="container">
+        <div class="image-column">
+            <img id="lessonImage" src="/api/placeholder/400/400" alt="Lesson image">
+        </div>
+        <div class="language-content">
+            <p id="englishSentence"></p>
+            <p id="afrikaansSentence"></p>
+            <button id="listenButton" class="listen-icon">Listen</button>
+            <form id="wordForm">
+                <input type="text" id="wordInput" placeholder="Type the Afrikaans word here">
+                <input type="submit" value="Submit">
+            </form>
+            <div id="feedback"></div>
+            <button id="nextButton" style="display: none;">Next</button>
+        </div>
+    </div>
+    <div id="summaryTable" style="display: none;">
+        <h2>Lesson Summary</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>English</th>
+                    <th>Afrikaans</th>
+                    <th>Your Answer</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody id="summaryTableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const data = [
+        {
+            engSentence: "The boy is angry.",
+            afriSentence: "Die seun is kwaad.",
+            engWord: 'angry',
+            afriWord: 'kwaad',
+            audSrc: 'assets/kwaad.m4a',
+            imgSrc: 'assets/kwaad.png',
+        },
+        {
+            engSentence: "The girl is happy.",
+            afriSentence: "Die meisie is gelukkig.",
+            engWord: 'happy',
+            afriWord: 'gelukkig',
+            audSrc: 'assets/gelukkig.m4a',
+            imgSrc: 'assets/gelukkig.png',
+        },
+        {
+            engSentence: "The dog is sleeping.",
+            afriSentence: "Die hond slaap.",
+            engWord: 'sleeping',
+            afriWord: 'slaap',
+            audSrc: 'assets/slaap.m4a',
+            imgSrc: 'assets/slaap.png',
+        },
+        {
+            engSentence: "The child plays in the park.",
+            afriSentence: "Die kind speel in die park.",
+            engWord: 'child',
+            afriWord: 'kind',
+            audSrc: 'assets/kind.m4a',
+            imgSrc: 'assets/kind.png',
+        },
+        {
+            engSentence: "The house is big and red.",
+            afriSentence: "Die huis is groot en rooi.",
+            engWord: 'house',
+            afriWord: 'huis',
+            audSrc: 'assets/huis.m4a',
+            imgSrc: 'assets/huis.png',
+        },
+        {
+            engSentence: "I go to school every day.",
+            afriSentence: "Ek gaan elke dag skool toe.",
+            engWord: 'school',
+            afriWord: 'skool',
+            audSrc: 'assets/skool.m4a',
+            imgSrc: 'assets/skool.png',
+        },
+        {
+            engSentence: "There are many animals on the farm.",
+            afriSentence: "Daar is baie diere op die plaas.",
+            engWord: 'farm',
+            afriWord: 'plaas',
+            audSrc: 'assets/plaas.m4a',
+            imgSrc: 'assets/plaas.png',
+        },
+        {
+            engSentence: "We enjoy relaxing at the beach.",
+            afriSentence: "Ons geniet dit om by die strand te ontspan.",
+            engWord: 'beach',
+            afriWord: 'strand',
+            audSrc: 'assets/strand.m4a',
+            imgSrc: 'assets/strand.png',
+        },
+        {
+            engSentence: "We walk in the park and feed the ducks.",
+            afriSentence: "Ons stap in die park en voer die eende.",
+            engWord: 'park',
+            afriWord: 'park',
+            audSrc: 'assets/park.m4a',
+            imgSrc: 'assets/park.png',
+        },
+        {
+            engSentence: "I go to the shop to buy food.",
+            afriSentence: "Ek gaan na die winkel om kos te koop.",
+            engWord: 'shop',
+            afriWord: 'winkel',
+            audSrc: 'assets/winkel.m4a',
+            imgSrc: 'assets/winkel.png',
+        }
+    ];
+
+
+        let currentLessonIndex = 0;
+        const userAnswers = [];
+
+        function loadLesson(index) {
+            const lesson = data[index];
+            document.getElementById('englishSentence').textContent = lesson.engSentence;
+            document.getElementById('afrikaansSentence').textContent = lesson.afriSentence;
+            document.getElementById('word').textContent = `(${lesson.engWord}) ${lesson.afriWord}`;
+            document.getElementById('lessonImage').src = lesson.imgSrc;
+            document.getElementById('wordInput').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('nextButton').style.display = 'none';
+        }
+
+        function showSummary() {
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('summaryTable').style.display = 'block';
+            const tableBody = document.getElementById('summaryTableBody');
+            tableBody.innerHTML = '';
+            userAnswers.forEach((answer, index) => {
+                const row = tableBody.insertRow();
+                row.insertCell(0).textContent = data[index].engSentence;
+                row.insertCell(1).textContent = data[index].afriWord;
+                row.insertCell(2).textContent = answer.userAnswer;
+                const resultCell = row.insertCell(3);
+                if (answer.isCorrect) {
+                    resultCell.textContent = 'Correct';
+                    resultCell.classList.add('correct');
+                } else {
+                    resultCell.textContent = 'Incorrect';
+                    resultCell.classList.add('incorrect');
+                }
+            });
+        }
+
+        document.getElementById('listenButton').addEventListener('click', function() {
+            const audio = new Audio(data[currentLessonIndex].audSrc);
+            audio.play().catch(e => console.error("Error playing audio:", e));
+        });
+
+        document.getElementById('wordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userInput = document.getElementById('wordInput').value.trim().toLowerCase();
+            const correctWord = data[currentLessonIndex].afriWord.toLowerCase();
+            const feedbackElement = document.getElementById('feedback');
+            const isCorrect = userInput === correctWord;
+
+            userAnswers.push({ userAnswer: userInput, isCorrect: isCorrect });
+
+            if (isCorrect) {
+                feedbackElement.textContent = 'Correct!';
+                feedbackElement.style.color = 'green';
+            } else {
+                feedbackElement.textContent = `Incorrect. The correct word is "${data[currentLessonIndex].afriWord}".`;
+                feedbackElement.style.color = 'red';
+            }
+
+            document.getElementById('nextButton').style.display = 'block';
+        });
+
+        document.getElementById('nextButton').addEventListener('click', function() {
+            currentLessonIndex++;
+            if (currentLessonIndex < data.length) {
+                loadLesson(currentLessonIndex);
+            } else {
+                showSummary();
+            }
+        });
+
+        loadLesson(currentLessonIndex);
+    </script>
+</body>
+</html>

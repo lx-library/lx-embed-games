@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        li {
+            cursor: pointer;
+        }
+        .children {
+            display: none;
+        }
+        .expanded > .children {
+            display: block;
+        }
+        #tree-container {
+            border: 1px solid grey;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select a Course to Edit</h1>
+    <div id="tree-container"></div>
+
+    <script>
+const root = [
+    {
+        text: 'Mathematics',
+        children: [
+            {
+                text: 'Numbers, Operations and Relationships',
+                children: [
+                    {
+                        text: 'Grade 1',
+                        children: [
+                            { text: 'Recognize and read numbers up to 20.' },
+                            { text: 'Count objects and numbers up to 20.' },
+                            { text: 'Write numerals and number names from 1 to 20.' },
+                            { text: 'Compare and order numbers from smallest to largest (up to 20).' },
+                            { text: 'Understand basic addition and subtraction of numbers up to 10.' },
+                            { text: 'Solve simple addition and subtraction problems using concrete objects.' },
+                            { text: 'Begin to understand the concept of zero.' },
+                            { text: 'Use counting patterns, e.g., counting in 1s, 2s, 5s, and 10s.' }
+                        ]
+                    },
+                    {
+                        text: 'Grade 2',
+                        children: [
+                            { text: 'Recognize and read numbers up to 100.' },
+                            { text: 'Count forwards and backwards in 1s, 2s, 5s, and 10s.' },
+                            { text: 'Write and order numbers up to 100.' },
+                            { text: 'Understand place value (units and tens) up to 100.' },
+                            { text: 'Perform addition and subtraction of numbers up to 20.' },
+                            { text: 'Solve simple word problems involving addition and subtraction.' },
+                            { text: 'Identify and use ordinal numbers (e.g., 1st, 2nd, 3rd).' },
+                            { text: 'Introduce the concept of grouping objects and simple multiplication by 2, 5, and 10.' }
+                        ]
+                    },
+                    {
+                        text: 'Grade 3',
+                        children: [
+                            { text: 'Recognize and read numbers up to 1,000.' },
+                            { text: 'Count forwards and backwards in 1s, 2s, 5s, 10s, and 100s.' },
+                            { text: 'Understand place value (units, tens, and hundreds).' },
+                            { text: 'Add and subtract numbers up to 99.' },
+                            { text: 'Use mental strategies for addition and subtraction.' },
+                            { text: 'Solve real-life word problems involving addition, subtraction, multiplication, and grouping.' },
+                            { text: 'Begin to understand division as sharing equally.' },
+                            { text: 'Introduction to basic fractions (e.g., ½, ¼, ⅓) as parts of a whole.' }
+                        ]
+                    },
+                    {
+                        text: 'Grade 4',
+                        children: [
+                            { text: 'Recognize and work with numbers up to 10,000.' },
+                            { text: 'Count forwards and backwards in various intervals (2s, 3s, 5s, 10s, 100s, 1,000s).' },
+                            { text: 'Understand place value up to 10,000 (units, tens, hundreds, and thousands).' },
+                            { text: 'Perform addition and subtraction of 4-digit numbers.' },
+                            { text: 'Multiply by 1-digit numbers using long multiplication.' },
+                            { text: 'Solve division problems with remainders.' },
+                            { text: 'Use rounding and estimation to check reasonableness of answers.' },
+                            { text: 'Work with simple fractions and equivalent fractions.' },
+                            { text: 'Introduction to decimals (e.g., tenths).' }
+                        ]
+                    },
+                    {
+                        text: 'Grade 5',
+                        children: [
+                            { text: 'Recognize and work with numbers up to 100,000.' },
+                            { text: 'Understand place value up to 100,000 (units, tens, hundreds, thousands, ten thousands).' },
+                            { text: 'Perform addition and subtraction of 5-digit numbers.' },
+                            { text: 'Multiply 3-digit numbers by 2-digit numbers.' },
+                            { text: 'Perform division of 4-digit numbers by 1-digit numbers.' },
+                            { text: 'Solve real-life word problems involving all four operations.' },
+                            { text: 'Work with proper fractions, mixed numbers, and improper fractions.' },
+                            { text: 'Add and subtract fractions with common denominators.' },
+                            { text: 'Introduction to decimal fractions (up to 2 decimal places).' }
+                        ]
+                    },
+                    {
+                        text: 'Grade 6',
+                        children: [
+                            { text: 'Recognize and work with numbers up to 1,000,000.' },
+                            { text: 'Understand place value up to 1,000,000.' },
+                            { text: 'Perform long addition and subtraction with large numbers.' },
+                            { text: 'Multiply up to 4-digit numbers by 2-digit numbers.' },
+                            { text: 'Perform division of up to 5-digit numbers by 1-digit and 2-digit numbers.' },
+                            { text: 'Add, subtract, and multiply proper and improper fractions.' },
+                            { text: 'Convert between mixed numbers and improper fractions.' },
+                            { text: 'Work with percentages and ratios.' },
+                            { text: 'Add and subtract decimals (up to 2 decimal places).' }
+                        ]
+                    },
+                    {
+                        text: 'Grade 7',
+                        children: [
+                            { text: 'Work with numbers up to 10 million.' },
+                            { text: 'Perform operations with integers (positive and negative numbers).' },
+                            { text: 'Solve problems involving prime factors, LCM, and HCF.' },
+                            { text: 'Multiply and divide decimals by whole numbers.' },
+                            { text: 'Perform operations with common fractions and mixed numbers.' },
+                            { text: 'Understand and use percentages in various contexts.' },
+                            { text: 'Solve ratio and rate problems.' },
+                            { text: 'Work with simple algebraic expressions related to numbers.' }
+                        ]
+                    },
+                    {
+                        text: 'Grade 8',
+                        children: [
+                            { text: 'Use exponential notation for large and small numbers.' },
+                            { text: 'Solve problems involving addition, subtraction, multiplication, and division of integers.' },
+                            { text: 'Work with rational numbers, including fractions, decimals, and percentages.' },
+                            { text: 'Solve complex problems involving ratios, rates, and proportions.' },
+                            { text: 'Apply the order of operations (BODMAS) to more complex calculations.' },
+                            { text: 'Understand and apply the concept of direct and inverse proportion.' },
+                            { text: 'Simplify and solve algebraic expressions involving numbers.' }
+                        ]
+                    },
+                    {
+                        text: 'Grade 9',
+                        children: [
+                            { text: 'Work with real numbers, including surds and irrational numbers.' },
+                            { text: 'Perform operations with scientific notation.' },
+                            { text: 'Solve problems involving percentages, including profit, loss, and compound interest.' },
+                            { text: 'Work with ratios in various contexts, including scale and map reading.' },
+                            { text: 'Solve algebraic equations involving fractions, decimals, and percentages.' },
+                            { text: 'Perform arithmetic with complex rational numbers, including decimal expansions of rational numbers.' },
+                            { text: 'Understand and apply exponents and roots (e.g., square roots, cube roots).' }
+                        ]
+                    },
+                    {
+                        text: 'Grade 10',
+                        children: [
+                            { text: 'Solve problems involving real numbers, including rational and irrational numbers.' },
+                            { text: 'Use surds and exponents in calculations and expressions.' },
+                            { text: 'Solve complex problems involving ratios and proportions in different contexts.' },
+                            { text: 'Apply percentages in financial contexts (e.g., VAT, interest calculations).' },
+                            { text: 'Solve quadratic equations involving numerical coefficients.' },
+                            { text: 'Work with functions that describe numerical relationships.' },
+                            { text: 'Analyze patterns and sequences involving numbers.' }
+                        ]
+                    },
+                    {
+                        text: 'Grade 11',
+                        children: [
+                            { text: 'Apply number operations to more advanced algebraic expressions and complex numbers.' },
+                            { text: 'Solve equations and inequalities involving surds, exponents, and logarithms.' },
+                            { text: 'Work with arithmetic and geometric sequences and series.' },
+                            { text: 'Solve problems involving financial mathematics (e.g., annuities, compound interest, depreciation).' },
+                            { text: 'Simplify and solve rational expressions involving polynomials.' },
+                            { text: 'Solve problems using proportional reasoning in different contexts.' },
+                            { text: 'Work with rates of change and introduce the concept of limits.' }
+                        ]
+                    },
+                    {
+                        text: 'Grade 12',
+                        children: [
+                            { text: 'Work with real and complex numbers, including polar and exponential forms of complex numbers.' },
+                            { text: 'Solve exponential and logarithmic equations in advanced contexts.' },
+                            { text: 'Analyze and solve problems involving sequences, series, and financial mathematics.' },
+                            { text: 'Solve advanced problems involving limits, continuity, and differentiation (introduction to calculus).' },
+                            { text: 'Apply advanced proportional reasoning and numerical operations in real-world and mathematical modeling.' },
+                            { text: 'Perform operations with matrices and determinants.' },
+                            { text: 'Solve problems involving numerical integration and differential equations.' }
+                        ]
+                    }
+                ]
+            },
+            {
+                text: 'Patterns, Functions and Algebra',
+                // Insert similar structured breakdown for Patterns, Functions, and Algebra
+            },
+            {
+                text: 'Space and Shape (Geometry)',
+                // Insert similar structured breakdown for Space and Shape (Geometry)
+            },
+            {
+                text: 'Measurement',
+                // Insert similar structured breakdown for Measurement
+            },
+            {
+                text: 'Data Handling',
+                // Insert similar structured breakdown for Data Handling
+            }
+        ]
+    }
+];
+
+
+
+        function createTreeNode(node) {
+            const li = document.createElement('li');
+            const span = document.createElement('span');
+            span.textContent = node.text;
+            li.appendChild(span);
+
+            if (node.children && node.children.length > 0) {
+                const ul = document.createElement('ul');
+                ul.classList.add('children');
+
+                node.children.forEach(child => {
+                    ul.appendChild(createTreeNode(child));
+                });
+
+                li.appendChild(ul);
+
+                // Expand/collapse functionality
+                span.addEventListener('click', () => {
+                    li.classList.toggle('expanded');
+                });
+            } else {
+                // Leaf node selection
+                span.addEventListener('click', () => {
+                    alert(`You selected: ${node.text}`);
+                });
+            }
+
+            return li;
+        }
+
+        function createTree(root) {
+            const ul = document.createElement('ul');
+            root.forEach(node => {
+                ul.appendChild(createTreeNode(node));
+            });
+            return ul;
+        }
+
+        document.getElementById('tree-container').appendChild(createTree(root));
+    </script>
+</body>
+</html>
