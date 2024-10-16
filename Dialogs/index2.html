@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Learning Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        #game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #start-button {
+            font-size: 1.2em;
+            padding: 10px 20px;
+        }
+        #game-grid {
+            display: none;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .character-column {
+            text-align: center;
+        }
+        .character-image {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+        .text-area {
+            min-height: 50px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #feedback-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        #feedback-table th, #feedback-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #feedback-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <button id="start-button">Start Game</button>
+        <div id="game-grid"></div>
+        <audio id="audioPlayer" controls style="display: none;"></audio>
+        <table id="feedback-table" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Scene</th>
+                    <th>Your Answer</th>
+                    <th>Correct Answer</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const data = {
+            backgroundImg: 'assets/zulu/background.png',
+            sprites: [
+                {
+                    title: 'Paul',
+                    img: 'assets/paul.png'
+                },
+                {
+                    title: 'Sipho',
+                    img: 'assets/zulu/sipho.png'
+                },
+            ],
+            scenes: [
+                {
+                    speaker: 'Paul',
+                    text: `Hi, my name is Paul. What's your name?`              
+                },
+                {
+                    speaker: 'Sipho',
+                    audSrc: 'assets/sipho-aud1.m4a',
+                    text: `Hello! I'm Sipho. Nice to meet you.`              
+                },
+                {
+                    speaker: 'Paul',
+                    text: `Nice to meet you. Where are you from?`              
+                },
+                {
+                    speaker: 'Sipho',
+                    audSrc: 'assets/sipho-aud2.mp3',
+                    text: `I'm from Durban. And you?`              
+                },
+                {
+                    speaker: 'Paul',
+                    text: `I'm from Pennington.`              
+                }
+            ]
+        };
+
+        let currentScene = 0;
+        let userAnswers = [];
+        let audioBlob;
+        let audioChunks = [];
+
+        const startButton = document.getElementById('start-button');
+        const gameGrid = document.getElementById('game-grid');
+        const feedbackTable = document.getElementById('feedback-table');
+        const audioPlayer = document.getElementById('audioPlayer');
+
+        startButton.addEventListener('click', startGame);
+
+        function startGame() {
+            startButton.style.display = 'none';
+            gameGrid.style.display = 'grid';
+            document.body.style.backgroundImage = `url(${data.backgroundImg})`;
+            document.body.style.backgroundSize = 'cover';
+            
+            data.sprites.forEach(sprite => {
+                const column = document.createElement('div');
+                column.className = 'character-column';
+                
+                const img = document.createElement('img');
+                img.src = sprite.img;
+                img.alt = sprite.title;
+                img.className = 'character-image';
+                
+                const textArea = document.createElement('div');
+                textArea.className = 'text-area';
+                
+                column.appendChild(textArea);
+                column.appendChild(img);
+                gameGrid.appendChild(column);
+            });
+            
+            loadScene();
+        }
+
+        function loadScene() {
+            if (currentScene >= data.scenes.length) {
+                showFeedback();
+                return;
+            }
+
+            const scene = data.scenes[currentScene];
+            const speakerIndex = data.sprites.findIndex(sprite => sprite.title === scene.speaker);
+            const textAreas = document.querySelectorAll('.text-area');
+
+            textAreas.forEach((area, index) => {
+                if (index === speakerIndex) {
+                    if (scene.audSrc) {
+                        const audio = new Audio(scene.audSrc);
+                        audio.play();
+                        area.innerHTML = `
+                            <input type="text" placeholder="Type what you heard in English">
+                            <button onclick="submitAnswer()">Submit</button>
+                        `;
+                    } else {
+                        area.textContent = scene.text;
+                        area.innerHTML += `
+                            <button onclick="startRecording()">Start Recording</button>
+                            <button onclick="stopRecording()" style="display:none;">Stop Recording</button>
+                        `;
+                    }
+                } else {
+                    area.textContent = '';
+                }
+            });
+        }
+
+        function startRecording() {
+            console.log('Recording started');
+            document.querySelector('button[onclick="startRecording()"]').style.display = 'none';
+            document.querySelector('button[onclick="stopRecording()"]').style.display = 'inline';
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                    mediaRecorder.start();
+
+                    mediaRecorder.addEventListener("dataavailable", event => {
+                        audioChunks.push(event.data);
+                    });
+                });
+        }
+
+        function stopRecording() {
+            console.log('Recording stopped');
+            document.querySelector('button[onclick="startRecording()"]').style.display = 'inline';
+            document.querySelector('button[onclick="stopRecording()"]').style.display = 'none';
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaRecorder.addEventListener("stop", () => {
+                    audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.style.display = 'block';
+                    //downloadButton.style.display = 'inline-block';
+                });
+            }
+            downloadRecording()
+            submitAnswer();
+        }
+        function downloadRecording() {
+            if (audioBlob) {
+                const url = URL.createObjectURL(audioBlob);
+                const a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style = "display: none";
+                a.href = url;
+                a.download = "recording.webm";
+                a.click();
+                window.URL.revokeObjectURL(url);
+
+                // Convert the Blob to a File and call the upload function
+                const file = new File([audioBlob], "recording.webm", { type: "audio/webm" });
+                uploadFile(file);  // Call the upload function here
+            }
+        }
+        async function uploadFile(file) {
+            const url = 'http://198.162.0.187:5432/whisper-stt';
+
+            // Create form data
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // Send the POST request
+                const response = await fetch(url, {
+                method: 'POST',
+                body: formData
+                });
+
+                if (!response.ok) {
+                throw new Error('Network response was not ok');
+                }
+
+                // Parse and handle the response
+                const result = await response.json();
+                console.log('File uploaded successfully:', result);
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            }
+        }
+
+
+
+        function submitAnswer() {
+            const scene = data.scenes[currentScene];
+            if (scene.audSrc) {
+                const input = document.querySelector('input[type="text"]');
+                userAnswers.push(input.value);
+            } else {
+                userAnswers.push("Recording submitted");
+            }
+            currentScene++;
+            loadScene();
+        }
+
+        function showFeedback() {
+            gameGrid.style.display = 'none';
+            feedbackTable.style.display = 'table';
+
+            const tbody = feedbackTable.querySelector('tbody');
+            data.scenes.forEach((scene, index) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = index + 1;
+                row.insertCell(1).textContent = userAnswers[index] || "N/A";
+                row.insertCell(2).textContent = scene.text;
+                row.insertCell(3).textContent = userAnswers[index] === scene.text ? "Correct" : "Incorrect";
+            });
+        }
+    </script>
+</body>
+</html>

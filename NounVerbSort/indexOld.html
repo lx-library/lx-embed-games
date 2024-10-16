@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noun and Verb Sorting Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        #word-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .word {
+            padding: 10px;
+            margin: 5px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            cursor: move;
+            user-select: none;
+        }
+        #game-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 800px;
+        }
+        .column {
+            width: 30%;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            min-height: 300px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .column h2 {
+            text-align: center;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        #submit-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #result-table {
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        #result-table th, #result-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Noun and Verb Sorting Game</h1>
+    <div id="word-container"></div>
+    <div id="game-container">
+        <div class="column" id="image-column">
+            <h2>Images</h2>
+        </div>
+        <div class="column" id="verb-column">
+            <h2>Verbs</h2>
+        </div>
+        <div class="column" id="noun-column">
+            <h2>Nouns</h2>
+        </div>
+    </div>
+    <button id="submit-btn">Submit</button>
+    <table id="result-table" style="display: none;">
+        <thead>
+            <tr>
+                <th>Word</th>
+                <th>Correct Category</th>
+                <th>Your Answer</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        const data = [
+            {
+                imgSrc: 'assets/soccer-play.png',
+                noun: 'soccer',
+                verb: 'play'
+            },
+            {
+                imgSrc: 'assets/dinner-makes.png',
+                noun: 'dinner',
+                verb: 'makes'
+            },
+            {
+                imgSrc: 'assets/floor-sweep.png',
+                noun: 'floor',
+                verb: 'sweep'
+            }
+        ];
+
+        const wordContainer = document.getElementById('word-container');
+        const imageColumn = document.getElementById('image-column');
+        const verbColumn = document.getElementById('verb-column');
+        const nounColumn = document.getElementById('noun-column');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultTable = document.getElementById('result-table');
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function createWordElement(word, type) {
+            const div = document.createElement('div');
+            div.textContent = word;
+            div.className = 'word';
+            div.draggable = true;
+            div.dataset.word = word;
+            div.dataset.type = type;
+            return div;
+        }
+
+        function initGame() {
+            const words = [];
+            data.forEach(item => {
+                words.push({ word: item.noun, type: 'noun' });
+                words.push({ word: item.verb, type: 'verb' });
+                const img = document.createElement('img');
+                img.src = item.imgSrc;
+                img.alt = `${item.verb} ${item.noun}`;
+                imageColumn.appendChild(img);
+            });
+
+            shuffleArray(words);
+            words.forEach(item => {
+                wordContainer.appendChild(createWordElement(item.word, item.type));
+            });
+        }
+
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.word);
+            e.dataTransfer.setData('application/json', JSON.stringify({ word: e.target.dataset.word, type: e.target.dataset.type }));
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const data = JSON.parse(e.dataTransfer.getData('application/json'));
+            const word = createWordElement(data.word, data.type);
+            e.target.appendChild(word);
+        }
+
+        function checkResults() {
+            const tbody = resultTable.querySelector('tbody');
+            tbody.innerHTML = '';
+            let allCorrect = true;
+
+            data.forEach(item => {
+                const nounResult = checkWord(item.noun, 'noun');
+                const verbResult = checkWord(item.verb, 'verb');
+                allCorrect = allCorrect && nounResult.correct && verbResult.correct;
+
+                addResultRow(item.noun, 'noun', nounResult);
+                addResultRow(item.verb, 'verb', verbResult);
+            });
+
+            resultTable.style.display = 'table';
+            alert(allCorrect ? 'Congratulations! All correct!' : 'Some answers are incorrect. Try again!');
+        }
+
+        function checkWord(word, correctType) {
+            const nounWords = Array.from(nounColumn.querySelectorAll('.word')).map(el => el.textContent);
+            const verbWords = Array.from(verbColumn.querySelectorAll('.word')).map(el => el.textContent);
+
+            if (correctType === 'noun') {
+                return { correct: nounWords.includes(word), answer: nounWords.includes(word) ? 'Noun' : 'Verb' };
+            } else {
+                return { correct: verbWords.includes(word), answer: verbWords.includes(word) ? 'Verb' : 'Noun' };
+            }
+        }
+
+        function addResultRow(word, correctType, result) {
+            const tbody = resultTable.querySelector('tbody');
+            const row = tbody.insertRow();
+            row.insertCell().textContent = word;
+            row.insertCell().textContent = correctType.charAt(0).toUpperCase() + correctType.slice(1);
+            row.insertCell().textContent = result.answer;
+            row.insertCell().textContent = result.correct ? 'Correct' : 'Incorrect';
+        }
+
+        initGame();
+
+        document.querySelectorAll('.word').forEach(word => {
+            word.addEventListener('dragstart', handleDragStart);
+        });
+
+        [verbColumn, nounColumn].forEach(column => {
+            column.addEventListener('dragover', handleDragOver);
+            column.addEventListener('drop', handleDrop);
+        });
+
+        submitBtn.addEventListener('click', checkResults);
+    </script>
+</body>
+</html>
