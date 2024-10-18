@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="." />
     <title>Skip Counting</title>
     <style>
       body {
@@ -15,6 +16,8 @@
         background-color: #f0f0f0;
       }
       .container {
+        display: flex;
+        flex-direction: column;
         text-align: center;
         background-color: white;
         padding: 2rem;
@@ -47,6 +50,11 @@
       #results ul {
         padding-left: 20px;
       }
+      #resultsMessage {
+        margin-top: 1rem;
+        font-weight: bold;
+        color: blue;
+      }
       #timer {
         font-size: 1.2rem;
         margin-bottom: 1rem;
@@ -64,9 +72,9 @@
   <body>
     <div class="container">
       <h1 id="skipH1">Skip Counting By 1's</h1>
-      <div id="timer">Time: 0s</div>
       <button id="startGameButton">Start Game</button>
       <div id="gameArea">
+        <div id="timer">Time: 0s</div>
         <p>Enter the next number in the sequence</p>
         <div id="numberDisplay"></div>
         <input type="number" id="userInput" autofocus />
@@ -74,12 +82,15 @@
       </div>
       <div id="results">
         <h2>Game Results</h2>
+        <div id="resultsMessage">Game Over! See the results below.</div>
         <div id="correctInputs"></div>
         <div id="incorrectInputs"></div>
       </div>
+      <score-table id="scoreTable"></score-table>
     </div>
 
-    <script>
+    <script type="module" src="../components/ScoreTable.js"></script>
+    <script type="module">
       const numberDisplay = document.getElementById("numberDisplay");
       const userInput = document.getElementById("userInput");
       const message = document.getElementById("message");
@@ -90,11 +101,13 @@
       const timerDisplay = document.getElementById("timer");
       const startGameButton = document.getElementById("startGameButton");
       const gameArea = document.getElementById("gameArea");
+      const scoreTable = document.getElementById("scoreTable");
 
       let currentNumber = 0;
       let correctInputs = [];
       let incorrectInputs = [];
       let skipBy = 1;
+      let skipCount = 12;
       let timer = 0;
       let timerInterval;
 
@@ -123,6 +136,7 @@
       function startGame() {
         startGameButton.style.display = "none";
         gameArea.style.display = "block";
+        scoreTable.hide();
         startTimer();
         userInput.focus();
       }
@@ -154,16 +168,15 @@
 
         userInput.value = "";
 
-        if (currentNumber === skipBy * 12) {
+        if (currentNumber === skipBy * skipCount) {
           endGame();
         }
       }
 
-      function endGame() {
+      async function endGame() {
         stopTimer();
         userInput.disabled = true;
-        message.textContent = "Game Over! See the results below.";
-        message.style.color = "blue";
+        gameArea.style.display = "none";
 
         correctInputsDiv.innerHTML =
           "<h3>Correct Inputs:</h3><ul>" +
@@ -177,6 +190,12 @@
 
         resultsDiv.innerHTML += `<p>Time taken: ${timer} seconds</p>`;
         resultsDiv.style.display = "block";
+
+        await scoreTable.submitScore(
+          { correctInputs, incorrectInputs, timeTaken: timer },
+          incorrectInputs.length === 0
+        );
+        scoreTable.show();
       }
     </script>
   </body>
