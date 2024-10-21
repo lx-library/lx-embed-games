@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Audio Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            /* text-align: center; */
+            width: 80%;
+            max-width: 900px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        p{
+            font-size: 2em;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="content"></div>
+        <button id="nextBtn" style="display: none;">Next Page</button>
+    </div>
+
+    <script>
+        const data = {
+            pages: [
+                [
+                    {
+                        imageSrc: 'assets/page1.jpeg'
+                    },
+                    {
+                        text: [`As the morning sun rose high over the African plain, animals and birds gathered at the foot of Pride Rock.`, 
+                        `"There he is!" one of them cried suddenly. "There's the new Prince!" At once, everyone cheered and stamped their feet. "Welcome!" they shouted. "Welcome, Prince Simba!"`,
+                        `They watched in silence as Rafiki, a wise old baboon, raised the lion cub high in the air. The clouds parted, and the sun's rays shone down on the future King. Slowly, Rafiki lowered his arms and took Simba back to his proud parents, King Mufasa and Queen Sarabi. It was a very special day.`],
+
+                        audioFile: 'assets/page1.mp3'
+                    }
+                ],
+                [
+                    {
+                        imageSrc: 'assets/page2.jpeg'
+                    },
+                    {
+                        text: [`Time passed quickly for little Simba. There was so much to learn. One morning the King showed his son around the kingdom. "Remember," Mufasa warned, "a good king must respect all creatures, for we exist together in the great Circle of Life.".`],
+                        audioFile: 'assets/page1.mp3'
+                    }
+                ],
+                [
+                    {
+                        imageSrc: 'assets/page3.jpeg'
+                    },
+                    {
+                        text: [`Later that day, Simba met his uncle, Scar. The little cub proudly announced that he had seen the whole of his future kingdom. “Even beyond the northern border?” Scar asked slyly. “Well, no,” said Simba sadly. “My father has forbidden me to go there.” “Quite right,” said Scar. “Only the bravest go there. An elephant graveyard is no place for a young prince.”`],
+                        audioFile: 'assets/page1.mp3'
+                    }
+                ]
+            ]
+        };
+
+        let currentPage = 0;
+        let recorder;
+        let audioChunks = [];
+
+        function loadPage(pageIndex) {
+            const page = data.pages[pageIndex];
+            const content = document.getElementById('content');
+            content.innerHTML = '';
+
+            page.forEach(item => {
+                if (item.imageSrc) {
+                    const img = document.createElement('img');
+                    img.src = item.imageSrc;
+                    content.appendChild(img);
+                }
+                if (item.text) {
+                    const paragraphs = item.text
+                    paragraphs.forEach(paragraph => {
+                        const p = document.createElement('p');
+                        p.textContent = paragraph;
+                        content.appendChild(p);
+                    })
+                    
+                }
+                if (item.audioFile) {
+                    const audioBtn = document.createElement('button');
+                    audioBtn.textContent = 'Play Audio';
+                    audioBtn.onclick = () => {
+                        const audio = new Audio(item.audioFile);
+                        audio.play();
+                    };
+                    content.appendChild(audioBtn);
+                }
+            });
+
+            const recordBtn = document.createElement('button');
+            recordBtn.textContent = 'Start Recording';
+            recordBtn.onclick = toggleRecording;
+            content.appendChild(recordBtn);
+
+            document.getElementById('nextBtn').style.display = 'none';
+        }
+
+        async function toggleRecording() {
+            if (!recorder) {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                recorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                recorder.ondataavailable = e => audioChunks.push(e.data);
+                recorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = audioUrl;
+                    downloadLink.download = `recording_page_${currentPage + 1}.wav`;
+                    downloadLink.textContent = 'Download Recording';
+                    document.getElementById('content').appendChild(downloadLink);
+
+                    document.getElementById('nextBtn').style.display = 'inline-block';
+                };
+
+                recorder.start();
+                this.textContent = 'Stop Recording';
+            } else {
+                recorder.stop();
+                this.textContent = 'Start Recording';
+                recorder = null;
+            }
+        }
+
+        document.getElementById('nextBtn').onclick = () => {
+            currentPage++;
+            if (currentPage < data.pages.length) {
+                loadPage(currentPage);
+            } else {
+                document.getElementById('content').innerHTML = '<h2>All pages completed!</h2>';
+                document.getElementById('nextBtn').style.display = 'none';
+            }
+        };
+
+        loadPage(currentPage);
+
+
+
+
+
+
+
+    </script>
+</body>
+</html>

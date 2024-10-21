@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Sorting Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .image-container, .category-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .category {
+            border: 2px solid #ccc;
+            padding: 10px;
+            min-height: 100px;
+            width: 30%;
+        }
+        img {
+            width: 80px;
+            height: 80px;
+            cursor: move;
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Sorting Game</h1>
+    <div class="image-container" id="imageContainer"></div>
+    <div class="category-container">
+        <div class="category" id="PEOPLE">
+            <h2>People</h2>
+        </div>
+        <div class="category" id="PLACES">
+            <h2>Places</h2>
+        </div>
+        <div class="category" id="THING">
+            <h2>Things</h2>
+        </div>
+    </div>
+    <button id="submitBtn">Submit</button>
+    <div id="results"></div>
+
+    <script>
+
+        const dat = {
+            pages: [
+                [
+                    {
+                        imageSrc: 'assets/page1.png'
+                    },
+                    {
+                        text: 'Text goes here.',
+                        audioFile: 'assets/page1.mp3'
+                    }
+                ],
+                [
+                    {
+                        imageSrc: 'assets/page2.png'
+                    },
+                    {
+                        text: 'Text goes here.',
+                        audioFile: 'assets/page2.mp3'
+                    }
+                ]
+                
+            ]
+        }
+        const data = {
+            items: [
+                {
+                    imgSrc: 'assets/ambulance.png',
+                    type: 'THING'
+                },
+                {
+                    imgSrc: 'assets/bigben.png',
+                    type: 'PLACES'
+                },
+                {
+                    imgSrc: 'assets/castle.png',
+                    type: 'THING'
+                },
+                {
+                    imgSrc: 'assets/fish.png',
+                    type: 'THING'
+                },
+                {
+                    imgSrc: 'assets/fisherman.png',
+                    type: 'PEOPLE'
+                },
+                {
+                    imgSrc: 'assets/girl.png',
+                    type: 'PEOPLE'
+                },
+                {
+                    imgSrc: 'assets/monkey.png',
+                    type: 'THING'
+                },
+
+                {
+                    imgSrc: 'assets/pencilcase.png',
+                    type: 'THING'
+                },
+                {
+                    imgSrc: 'assets/school.png',
+                    type: 'PLACES'
+                },
+                {
+                    imgSrc: 'assets/surfboard.png',
+                    type: 'THING'
+                },
+                {
+                    imgSrc: 'assets/towerbridge.png',
+                    type: 'PLACES'
+                },
+                {
+                    imgSrc: 'assets/vet.png',
+                    type: 'PEOPLE'
+                },
+            ]
+        };
+
+        const imageContainer = document.getElementById('imageContainer');
+        const categories = ['PEOPLE', 'PLACES', 'THING'];
+        const submitBtn = document.getElementById('submitBtn');
+        const results = document.getElementById('results');
+
+        // Create and display images
+        data.items.forEach(item => {
+            const img = document.createElement('img');
+            img.src = item.imgSrc;
+            img.alt = item.type;
+            img.dataset.type = item.type;
+            imageContainer.appendChild(img);
+        });
+
+        // Initialize Sortable for image container and categories
+        new Sortable(imageContainer, {
+            group: 'shared',
+            animation: 150
+        });
+
+        categories.forEach(category => {
+            new Sortable(document.getElementById(category), {
+                group: 'shared',
+                animation: 150
+            });
+        });
+
+        // Submit button click handler
+        submitBtn.addEventListener('click', () => {
+            const results = categories.map(category => {
+                const container = document.getElementById(category);
+                const images = container.getElementsByTagName('img');
+                return {
+                    category,
+                    correct: Array.from(images).filter(img => img.dataset.type === category).length,
+                    total: images.length
+                };
+            });
+
+            displayResults(results);
+        });
+
+        // Display results in a table
+        function displayResults(results) {
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <tr>
+                    <th>Category</th>
+                    <th>Correct</th>
+                    <th>Total</th>
+                </tr>
+                ${results.map(result => `
+                    <tr>
+                        <td>${result.category}</td>
+                        <td>${result.correct}</td>
+                        <td>${result.total}</td>
+                    </tr>
+                `).join('')}
+            `;
+            results.innerHTML = '';
+            results.appendChild(table);
+        }
+    </script>
+</body>
+</html>

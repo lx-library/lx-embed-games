@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factor Path Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        #game-container {
+            margin: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 60px);
+            gap: 2px;
+            background-color: #333;
+            padding: 2px;
+            border-radius: 4px;
+        }
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .player {
+            background-color: #4CAF50 !important;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.8);
+        }
+        .target {
+            background-color: #f44336 !important;
+            color: white;
+            font-weight: bold;
+        }
+        .wrong {
+            background-color: #ff9999 !important;
+            animation: shake 0.5s;
+        }
+        .visited {
+            background-color: #e8f5e9;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .instructions {
+            max-width: 600px;
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #reset-button {
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #reset-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h2>Factor Path Game</h2>
+        <p>Find a path from the bottom-left to the top-right using only factors of the target number (144).</p>
+        <p>Use arrow keys to move. You can only move up, down, left, or right.</p>
+        <p>Step only on numbers that are factors of 144!</p>
+    </div>
+    <div id="game-container">
+        <div id="grid" class="grid"></div>
+    </div>
+    <button id="reset-button" onclick="resetGame()">New Game</button>
+
+    <script>
+        const targetNumber = 144;
+        const gridSize = 10;
+        let playerPosition = { x: 0, y: gridSize - 1 };
+        let gameOver = false;
+        let visitedCells = new Set();
+        let grid;
+
+        function getFactors(num) {
+            const factors = [];
+            for (let i = 1; i <= num; i++) {
+                if (num % i === 0) {
+                    factors.push(i);
+                }
+            }
+            return factors;
+        }
+
+        const factors = getFactors(targetNumber);
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function generateRandomPath(startX, startY, endX, endY) {
+            // Initialize grid for path finding
+            const visited = Array(gridSize).fill().map(() => Array(gridSize).fill(false));
+            const path = new Set();
+            
+            // Start position
+            let current = { x: startX, y: startY };
+            visited[startY][startX] = true;
+            path.add(`${startX},${startY}`);
+            
+            // Stack for tracking the path
+            const stack = [current];
+            
+            // Direction weights (bias towards target)
+            function getDirectionWeight(x, y, dx, dy) {
+                const newX = x + dx;
+                const newY = y + dy;
+                const distanceToTarget = Math.abs(newX - endX) + Math.abs(newY - endY);
+                return distanceToTarget + Math.random() * 5; // Add randomness
+            }
+
+            while (stack.length > 0) {
+                current = stack[stack.length - 1];
+                
+                // If we reached the target, we're done
+                if (current.x === endX && current.y === endY) {
+                    break;
+                }
+
+                // Get all possible moves
+                const moves = [
+                    { dx: 0, dy: -1 },  // up
+                    { dx: 1, dy: 0 },   // right
+                    { dx: 0, dy: 1 },   // down
+                    { dx: -1, dy: 0 }   // left
+                ].filter(move => {
+                    const newX = current.x + move.dx;
+                    const newY = current.y + move.dy;
+                    return newX >= 0 && newX < gridSize && 
+                           newY >= 0 && newY < gridSize && 
+                           !visited[newY][newX];
+                }).map(move => ({
+                    ...move,
+                    weight: getDirectionWeight(current.x, current.y, move.dx, move.dy)
+                }));
+
+                // Sort moves by weight (lower is better)
+                moves.sort((a, b) => a.weight - b.weight);
+
+                if (moves.length > 0) {
+                    // Choose a move (prefer moves towards target but allow some randomness)
+                    const moveIndex = Math.random() < 0.7 ? 0 : Math.floor(Math.random() * moves.length);
+                    const move = moves[moveIndex];
+                    
+                    const newX = current.x + move.dx;
+                    const newY = current.y + move.dy;
+                    
+                    visited[newY][newX] = true;
+                    path.add(`${newX},${newY}`);
+                    stack.push({ x: newX, y: newY });
+                } else {
+                    // Backtrack if no moves available
+                    stack.pop();
+                }
+            }
+
+            // If we haven't reached the target, add a direct path to it
+            if (current.x !== endX || current.y !== endY) {
+                let x = current.x;
+                let y = current.y;
+                while (x !== endX || y !== endY) {
+                    if (x < endX) x++;
+                    else if (x > endX) x--;
+                    if (y < endY) y++;
+                    else if (y > endY) y--;
+                    path.add(`${x},${y}`);
+                }
+            }
+
+            return path;
+        }
+
+        function generateGrid() {
+            const grid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
+            
+            // Generate path with more randomization
+            const path = generateRandomPath(0, gridSize - 1, gridSize - 1, 0);
+            
+            // Place factors along the path
+            path.forEach(pos => {
+                const [x, y] = pos.split(',').map(Number);
+                grid[y][x] = factors[Math.floor(Math.random() * (factors.length - 2)) + 1];
+            });
+
+            // Place target number
+            grid[0][gridSize-1] = targetNumber;
+            
+            // Fill remaining cells with non-factors
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    if (grid[y][x] === 0) {
+                        let num;
+                        do {
+                            num = Math.floor(Math.random() * targetNumber) + 1;
+                        } while (factors.includes(num));
+                        grid[y][x] = num;
+                    }
+                }
+            }
+
+            // Ensure start position has a small factor
+            grid[gridSize-1][0] = factors[1];
+
+            return grid;
+        }
+
+        function createGrid() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.textContent = grid[y][x];
+                    
+                    const cellKey = `${x},${y}`;
+                    if (visitedCells.has(cellKey)) {
+                        cell.classList.add('visited');
+                    }
+                    
+                    if (x === playerPosition.x && y === playerPosition.y) {
+                        cell.classList.add('player');
+                    }
+                    
+                    if (x === gridSize-1 && y === 0) {
+                        cell.classList.add('target');
+                    }
+                    
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        function movePlayer(dx, dy) {
+            if (gameOver) return;
+
+            const newX = playerPosition.x + dx;
+            const newY = playerPosition.y + dy;
+
+            if (newX >= 0 && newX < gridSize && newY >= 0 && newY < gridSize) {
+                const newNumber = grid[newY][newX];
+                
+                if (targetNumber % newNumber === 0) {
+                    playerPosition.x = newX;
+                    playerPosition.y = newY;
+                    visitedCells.add(`${newX},${newY}`);
+                    
+                    if (newX === gridSize-1 && newY === 0) {
+                        setTimeout(() => {
+                            alert('Congratulations! You won!');
+                            gameOver = true;
+                        }, 100);
+                    }
+                } else {
+                    const cells = document.getElementsByClassName('cell');
+                    cells[newY * gridSize + newX].classList.add('wrong');
+                    setTimeout(() => {
+                        cells[newY * gridSize + newX].classList.remove('wrong');
+                    }, 500);
+                }
+                
+                createGrid();
+            }
+        }
+
+        function resetGame() {
+            playerPosition = { x: 0, y: gridSize - 1 };
+            gameOver = false;
+            visitedCells = new Set();
+            grid = generateGrid();
+            createGrid();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            switch(e.key) {
+                case 'ArrowUp':
+                    movePlayer(0, -1);
+                    break;
+                case 'ArrowDown':
+                    movePlayer(0, 1);
+                    break;
+                case 'ArrowLeft':
+                    movePlayer(-1, 0);
+                    break;
+                case 'ArrowRight':
+                    movePlayer(1, 0);
+                    break;
+            }
+        });
+
+        // Initialize game
+        grid = generateGrid();
+        createGrid();
+    </script>
+</body>
+</html>
