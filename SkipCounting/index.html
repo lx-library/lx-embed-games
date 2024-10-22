@@ -1,178 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="." />
     <title>Skip Counting</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        .container {
-            text-align: center;
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 500px;
-            width: 100%;
-        }
-        #numberDisplay {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        #userInput {
-            font-size: 1rem;
-            padding: 0.5rem;
-            width: 100px;
-        }
-        #message {
-            margin-top: 1rem;
-            font-weight: bold;
-        }
-        #results {
-            margin-top: 2rem;
-            text-align: left;
-            display: none;
-        }
-        #results h2 {
-            color: #333;
-        }
-        #results ul {
-            padding-left: 20px;
-        }
-        #timer {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-        #startGameButton {
-            font-size: 1rem;
-            padding: 0.5rem 1rem;
-            margin-bottom: 1rem;
-        }
-        #gameArea {
-            display: none;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        background-color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        width: 100%;
+      }
+      #numberDisplay {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      #userInput {
+        font-size: 1rem;
+        padding: 0.5rem;
+        width: 100px;
+      }
+      #message {
+        margin-top: 1rem;
+        font-weight: bold;
+      }
+      #results {
+        margin-top: 2rem;
+        text-align: left;
+        display: none;
+      }
+      #results h2 {
+        color: #333;
+      }
+      #results ul {
+        padding-left: 20px;
+      }
+      #resultsMessage {
+        margin-top: 1rem;
+        font-weight: bold;
+        color: blue;
+      }
+      #timer {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+      }
+      #startGameButton {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        margin-bottom: 1rem;
+      }
+      #gameArea {
+        display: none;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1 id="skipH1">Skip Counting By 1's</h1>
+      <h1 id="skipH1">Skip Counting By 1's</h1>
+      <button id="startGameButton">Start Game</button>
+      <div id="gameArea">
         <div id="timer">Time: 0s</div>
-        <button id="startGameButton">Start Game</button>
-        <div id="gameArea">
-            <p>Enter the next number in the sequence</p>
-            <div id="numberDisplay"></div>
-            <input type="number" id="userInput" autofocus>
-            <div id="message"></div>
-        </div>
-        <div id="results">
-            <h2>Game Results</h2>
-            <div id="correctInputs"></div>
-            <div id="incorrectInputs"></div>
-        </div>
+        <p>Enter the next number in the sequence</p>
+        <div id="numberDisplay"></div>
+        <input type="number" id="userInput" autofocus />
+        <div id="message"></div>
+      </div>
+      <div id="results">
+        <h2>Game Results</h2>
+        <div id="resultsMessage">Game Over! See the results below.</div>
+        <div id="correctInputs"></div>
+        <div id="incorrectInputs"></div>
+      </div>
+      <score-table id="scoreTable"></score-table>
     </div>
 
-    <script>
-        const numberDisplay = document.getElementById('numberDisplay');
-        const userInput = document.getElementById('userInput');
-        const message = document.getElementById('message');
-        const resultsDiv = document.getElementById('results');
-        const correctInputsDiv = document.getElementById('correctInputs');
-        const incorrectInputsDiv = document.getElementById('incorrectInputs');
-        const skipH1 = document.getElementById('skipH1');
-        const timerDisplay = document.getElementById('timer');
-        const startGameButton = document.getElementById('startGameButton');
-        const gameArea = document.getElementById('gameArea');
+    <script type="module" src="../components/ScoreTable.js"></script>
+    <script type="module">
+      const numberDisplay = document.getElementById("numberDisplay");
+      const userInput = document.getElementById("userInput");
+      const message = document.getElementById("message");
+      const resultsDiv = document.getElementById("results");
+      const correctInputsDiv = document.getElementById("correctInputs");
+      const incorrectInputsDiv = document.getElementById("incorrectInputs");
+      const skipH1 = document.getElementById("skipH1");
+      const timerDisplay = document.getElementById("timer");
+      const startGameButton = document.getElementById("startGameButton");
+      const gameArea = document.getElementById("gameArea");
+      const scoreTable = document.getElementById("scoreTable");
 
-        let currentNumber = 0;
-        let correctInputs = [];
-        let incorrectInputs = [];
-        let skipBy = 1;
-        let timer = 0;
-        let timerInterval;
+      let currentNumber = 0;
+      let correctInputs = [];
+      let incorrectInputs = [];
+      let skipBy = 1;
+      let skipCount = 12;
+      let timer = 0;
+      let timerInterval;
 
-        function getUrlParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
+      function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+
+      const urlSkipBy = getUrlParameter("skipBy");
+      if (urlSkipBy && !isNaN(urlSkipBy)) {
+        skipBy = parseInt(urlSkipBy, 10);
+        skipH1.innerText = `Skip Counting By ${skipBy}'s`;
+      }
+
+      function startTimer() {
+        timerInterval = setInterval(() => {
+          timer++;
+          timerDisplay.innerText = `Time: ${timer}s`;
+        }, 1000);
+      }
+
+      function stopTimer() {
+        clearInterval(timerInterval);
+      }
+
+      function startGame() {
+        startGameButton.style.display = "none";
+        gameArea.style.display = "block";
+        scoreTable.hide();
+        startTimer();
+        userInput.focus();
+      }
+
+      startGameButton.addEventListener("click", startGame);
+
+      userInput.addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+          checkInput();
+        }
+      });
+
+      function checkInput() {
+        const input = parseInt(userInput.value);
+        const expectedNumber = currentNumber + skipBy;
+
+        if (input === expectedNumber) {
+          correctInputs.push(input);
+          currentNumber = input;
+          numberDisplay.textContent +=
+            (numberDisplay.textContent ? ", " : "") + input;
+          message.textContent = "Correct!";
+          message.style.color = "green";
+        } else {
+          incorrectInputs.push(input);
+          message.textContent = "Incorrect. Try again!";
+          message.style.color = "red";
         }
 
-        const urlSkipBy = getUrlParameter('skipBy');
-        if (urlSkipBy && !isNaN(urlSkipBy)) {
-            skipBy = parseInt(urlSkipBy, 10);
-            skipH1.innerText = `Skip Counting By ${skipBy}'s`;
+        userInput.value = "";
+
+        if (currentNumber === skipBy * skipCount) {
+          endGame();
         }
+      }
 
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                timer++;
-                timerDisplay.innerText = `Time: ${timer}s`;
-            }, 1000);
-        }
+      async function endGame() {
+        stopTimer();
+        userInput.disabled = true;
+        gameArea.style.display = "none";
 
-        function stopTimer() {
-            clearInterval(timerInterval);
-        }
+        correctInputsDiv.innerHTML =
+          "<h3>Correct Inputs:</h3><ul>" +
+          correctInputs.map((input) => `<li>${input}</li>`).join("") +
+          "</ul>";
 
-        function startGame() {
-            startGameButton.style.display = 'none';
-            gameArea.style.display = 'block';
-            startTimer();
-            userInput.focus();
-        }
+        incorrectInputsDiv.innerHTML =
+          "<h3>Incorrect Inputs:</h3><ul>" +
+          incorrectInputs.map((input) => `<li>${input}</li>`).join("") +
+          "</ul>";
 
-        startGameButton.addEventListener('click', startGame);
+        resultsDiv.innerHTML += `<p>Time taken: ${timer} seconds</p>`;
+        resultsDiv.style.display = "block";
 
-        userInput.addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                checkInput();
-            }
-        });
-
-        function checkInput() {
-            const input = parseInt(userInput.value);
-            const expectedNumber = currentNumber + skipBy;
-
-            if (input === expectedNumber) {
-                correctInputs.push(input);
-                currentNumber = input;
-                numberDisplay.textContent += (numberDisplay.textContent ? ', ' : '') + input;
-                message.textContent = 'Correct!';
-                message.style.color = 'green';
-            } else {
-                incorrectInputs.push(input);
-                message.textContent = 'Incorrect. Try again!';
-                message.style.color = 'red';
-            }
-
-            userInput.value = '';
-
-            if (currentNumber === skipBy * 12) {
-                endGame();
-            }
-        }
-
-        function endGame() {
-            stopTimer();
-            userInput.disabled = true;
-            message.textContent = 'Game Over! See the results below.';
-            message.style.color = 'blue';
-            
-            correctInputsDiv.innerHTML = '<h3>Correct Inputs:</h3><ul>' + 
-                correctInputs.map(input => `<li>${input}</li>`).join('') + '</ul>';
-            
-            incorrectInputsDiv.innerHTML = '<h3>Incorrect Inputs:</h3><ul>' + 
-                incorrectInputs.map(input => `<li>${input}</li>`).join('') + '</ul>';
-            
-            resultsDiv.innerHTML += `<p>Time taken: ${timer} seconds</p>`;
-            resultsDiv.style.display = 'block';
-        }
+        await scoreTable.submitScore(
+          { correctInputs, incorrectInputs, timeTaken: timer },
+          incorrectInputs.length === 0
+        );
+        scoreTable.show();
+      }
     </script>
-</body>
+  </body>
 </html>
