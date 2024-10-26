@@ -1,3 +1,10 @@
+// Modified for LX
+
+// Copyright DWJ 2024.
+// Distributed under the Boost Software License, Version 1.0.
+// https://www.boost.org/LICENSE_1_0.txt
+
+import { renderDataTable } from "./renderDataTable.js";
 import { fetchScores, submitScore } from "./utils/scoreApi.js";
 
 const template = document.createElement("template");
@@ -28,26 +35,24 @@ template.innerHTML = `
   }
 </style>
 <details>
-  <summary>Past Scores</summary>
-  <div>
-    <table>
-      <thead>
-        <tr>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  <summary>Submissions</summary>
+    <div id="score-table-container"></div>
 </details>
 `;
 
+/**
+ * A custom HTML element that displays a score table.
+ *
+ * @class
+ * @extends HTMLElement
+ */
 class ScoreTable extends HTMLElement {
   constructor() {
     super();
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.appendChild(template.content.cloneNode(true));
 
-    this.scoreData = {};
+    this.scores = [];
     this.fetchScores();
   }
 
@@ -59,70 +64,45 @@ class ScoreTable extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {}
 
+  /** Renders the score table. */
   render() {
-    const scores = this.scoreData.scores || [];
-    const thead = this.shadowRoot.querySelector("thead tr");
-    const tbody = this.shadowRoot.querySelector("tbody");
-    thead.innerHTML = "";
-    tbody.innerHTML = "";
-
-    if (scores.length > 0) {
-      const allColumns = new Set(["date"]);
-
-      // Scan through all data to find all possible columns
-      scores.forEach((score) => {
-        const data = this.safeJsonParse(score.data || "{}");
-        Object.keys(data).forEach((key) => {
-          allColumns.add(key);
-        });
-      });
-
-      // Render the headers
-      allColumns.forEach((column) => {
-        const th = document.createElement("th");
-        th.innerText = column.charAt(0).toUpperCase() + column.slice(1);
-        thead.appendChild(th);
-      });
-
-      // Render the rows
-      scores.forEach((score) => {
-        const row = tbody.insertRow();
-        const data = this.safeJsonParse(score.data || "{}");
-        data.date = new Date(score.createdAt).toLocaleString();
-
-        allColumns.forEach((column) => {
-          const cell = row.insertCell();
-          cell.innerText = data[column]?.toString() ?? "";
-        });
-      });
-    }
+    const scores = this.scores ?? [];
+    const scoresData = scores.map((score) => ({
+      createdAt: score.createdAt,
+      ...score.data,
+    }));
+    const table = renderDataTable(scoresData);
+    const container = this.shadowRoot.querySelector("#score-table-container");
+    container.innerHTML = "";
+    container.appendChild(table);
   }
 
-  safeJsonParse(data) {
-    try {
-      return JSON.parse(data);
-    } catch (error) {
-      console.error("safeJsonParseE1: JSON parse error:", error, data);
-      return {};
-    }
-  }
-
+  /** Fetches scores from the API and updates the table. */
   async fetchScores() {
-    const scores = await fetchScores();
-    this.scoreData = scores;
+    this.scores = await fetchScores();
     this.render();
   }
 
+  /**
+   * Submits a score.
+   *
+   * @param {Object} data - The score data to submit. Can be any normal JSON
+   *   object, including root keys with binary file Blob types.
+   * @param {boolean} [pass=true] - Indicates whether the score is a pass.
+   *   Default is `true`
+   */
   async submitScore(data = {}, pass = true) {
     await submitScore(data, pass);
     await this.fetchScores();
   }
 
+  /** Shows the score table. */
   show() {
     const details = this.shadowRoot.querySelector("details");
     details.style.display = "flex";
   }
 
+  /** Hides the score table. */
   hide() {
     const details = this.shadowRoot.querySelector("details");
     details.style.display = "none";

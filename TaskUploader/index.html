@@ -1,218 +1,228 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamic Content Display</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
 
-        .container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
+      .container {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+      }
 
-        .card {
-            width: 100%;
-            text-align: center;
-        }
+      .card {
+        width: 100%;
+        text-align: center;
+      }
 
-        .question-text {
-            font-size: 1.2em;
-            color: #333;
-            margin-bottom: 15px;
-        }
+      .question-text {
+        font-size: 1.2em;
+        color: #333;
+        margin-bottom: 15px;
+      }
 
-        .content-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-            margin-top: 15px;
-        }
+      .content-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        margin-top: 15px;
+      }
 
-        .audio-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
+      .audio-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
 
-        .audio-button svg {
-            width: 30px;
-            height: 30px;
-            fill: white;
-        }
+      .audio-button svg {
+        width: 30px;
+        height: 30px;
+        fill: white;
+      }
 
-        .upload-section {
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-        }
+      .upload-section {
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+      }
 
-        .upload-button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-        }
+      .submit-button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1em;
+      }
 
-        .upload-button:hover {
-            background-color: #45a049;
-        }
+      .submit-button:hover {
+        background-color: #45a049;
+      }
 
-        .success-message {
-            font-size: 2em;
-            color: #4CAF50;
-            text-align: center;
-            display: none;
-        }
+      .success-message {
+        font-size: 2em;
+        color: #4caf50;
+        text-align: center;
+        display: none;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="content"></div>
+    <score-table id="scoreTable"></score-table>
 
-    <script>
-        const data = {
-            text: 'Use the Column Method to calulate the following...',
-            imgSrc: 'assets/question1.png',
-            audFile: 'assets/question1.mp3'
-        };
+    <script type="module" src="../components/ScoreTable.js"></script>
+    <script type="module">
+      const slideData = {
+        text: "Use the Column Method to calculate the following...",
+        imgSrc: "assets/question1.png",
+        audFile: "assets/question1.mp3",
+      };
+      const scoreTable = document.getElementById("scoreTable");
 
-        function renderContent() {
-            const contentDiv = document.getElementById('content');
-            
-            // Create container for dynamic content
-            const container = document.createElement('div');
-            container.className = 'container';
-            
-            // Create card for content
-            const card = document.createElement('div');
-            card.className = 'card';
-            
-            // Add text if it exists
-            if (data.text) {
-                const textDiv = document.createElement('div');
-                textDiv.className = 'question-text';
-                textDiv.textContent = data.text;
-                card.appendChild(textDiv);
+      function renderContent(
+        slideData = { text: "", imgSrc: "", audFile: "" },
+        onSubmit = async (data = {}) => {},
+      ) {
+        function createAudioSection(audioSrc) {
+          const audioButton = document.createElement("button");
+          audioButton.className = "audio-button";
+          audioButton.innerHTML = `
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+          </svg>
+        `;
+
+          const audio = document.createElement("audio");
+          audio.src = audioSrc;
+
+          audioButton.addEventListener("click", () => {
+            if (audio.paused) {
+              audio.play();
+            } else {
+              audio.pause();
             }
-            
-            // Add image if it exists
-            if (data.imgSrc) {
-                const img = document.createElement('img');
-                img.src = data.imgSrc;
-                img.alt = 'Content Image';
-                img.className = 'content-image';
-                card.appendChild(img);
-            }
-            
-            container.appendChild(card);
-            
-            // Add audio button if audio file exists
-            if (data.audFile) {
-                const audioButton = document.createElement('button');
-                audioButton.className = 'audio-button';
-                audioButton.innerHTML = `
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
-                    </svg>
-                `;
-                
-                const audio = document.createElement('audio');
-                audio.src = data.audFile;
-                
-                audioButton.addEventListener('click', () => {
-                    if (audio.paused) {
-                        audio.play();
-                    } else {
-                        audio.pause();
-                    }
-                });
-                
-                container.appendChild(audioButton);
-                container.appendChild(audio);
-            }
-            
-            // Create upload section
-            const uploadSection = document.createElement('div');
-            uploadSection.className = 'upload-section';
-            
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.style.display = 'none';
-            fileInput.id = 'fileInput';
-            
-            const uploadButton = document.createElement('button');
-            uploadButton.className = 'upload-button';
-            uploadButton.textContent = 'Upload File';
-            uploadButton.onclick = () => fileInput.click();
-            
-            uploadSection.appendChild(fileInput);
-            uploadSection.appendChild(uploadButton);
-            
-            // Success message
-            const successMessage = document.createElement('h1');
-            successMessage.className = 'success-message';
-            successMessage.textContent = 'Task Completed!';
-            
-            // Add everything to the content div
-            contentDiv.appendChild(container);
-            contentDiv.appendChild(uploadSection);
-            contentDiv.appendChild(successMessage);
-            
-            // Handle file upload
-            fileInput.addEventListener('change', async (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    
-                    try {
-                        // Simulate API call
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        
-                        // Show success message and hide other content
-                        container.style.display = 'none';
-                        uploadSection.style.display = 'none';
-                        successMessage.style.display = 'block';
-                    } catch (error) {
-                        console.error('Upload failed:', error);
-                        alert('Upload failed. Please try again.');
-                    }
-                }
-            });
+          });
+
+          return { audioButton, audio };
         }
 
-        // Initialize the page
-        renderContent();
+        let scoreData = {};
+
+        // Create container for dynamic content
+        const container = document.createElement("div");
+        container.className = "container";
+
+        // Create card for content
+        const card = document.createElement("div");
+        card.className = "card";
+
+        // Add text if it exists
+        if (slideData.text) {
+          const textDiv = document.createElement("div");
+          textDiv.className = "question-text";
+          textDiv.textContent = slideData.text;
+          card.appendChild(textDiv);
+        }
+
+        // Add image if it exists
+        if (slideData.imgSrc) {
+          const img = document.createElement("img");
+          img.src = slideData.imgSrc;
+          img.alt = "Content Image";
+          img.className = "content-image";
+          card.appendChild(img);
+        }
+
+        container.appendChild(card);
+
+        // Add audio if audio file exists
+        if (slideData.audFile) {
+          const { audioButton, audio } = createAudioSection(slideData.audFile);
+          container.appendChild(audioButton);
+          container.appendChild(audio);
+        }
+
+        // Create upload section
+        const uploadSection = document.createElement("div");
+        uploadSection.className = "upload-section";
+
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.id = "fileInput";
+
+        // Handle file upload
+        fileInput.addEventListener("change", async (e) => {
+          const file = e.target.files[0];
+          scoreData.recording = file ?? null;
+        });
+
+        uploadSection.appendChild(fileInput);
+        container.appendChild(uploadSection);
+
+        // Create submit button
+        const submitButton = document.createElement("button");
+        submitButton.className = "submit-button";
+        submitButton.textContent = "Submit";
+        submitButton.onclick = () => onSubmit(scoreData);
+        container.appendChild(submitButton);
+
+        return container;
+      }
+
+      // Initialize the page
+      const form = renderContent(slideData, async (scoreData = {}) => {
+        try {
+          await scoreTable.submitScore(scoreData, true);
+          scoreTable.show();
+
+          // Show success message and hide other content
+          form.style.display = "none";
+          successMessage.style.display = "block";
+        } catch (error) {
+          console.error("Submit failed:", error);
+          alert("Submit failed. Please try again.");
+        }
+      });
+
+      // Success message
+      const successMessage = document.createElement("h1");
+      successMessage.className = "success-message";
+      successMessage.textContent = "Task Completed!";
+
+      // Add everything to the content div
+      const contentDiv = document.getElementById("content");
+      contentDiv.appendChild(form);
+      contentDiv.appendChild(successMessage);
     </script>
-</body>
+  </body>
 </html>
